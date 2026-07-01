@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Luxurious+Script&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@font-face {
+  font-family: 'Bobby Jones';
+  src: url('./bobby-jones-soft.woff2') format('woff2'),
+       url('./bobby-jones-soft.woff') format('woff'),
+       url('./bobby-jones-soft.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Bobby Jones', sans-serif;
+}
+
+.script-title {
+  font-family: 'Luxurious Script', cursive;
+}
