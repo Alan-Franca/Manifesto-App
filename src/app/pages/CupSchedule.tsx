@@ -7,6 +7,27 @@ import { useNavigate } from 'react-router-dom';
 import { ScrapbookFlag } from '../components/ScrapbookFlag';
 import { AnimatedIcon } from '../components/AnimatedIcon';
 
+const ConnectorOitavasToQuartas = () => (
+  <div className="w-10 self-stretch relative text-[#00a859]/30">
+    <div className="absolute top-[50px] bottom-[50px] left-0 right-1/2 border-y-2 border-r-2 border-current rounded-r-lg" />
+    <div className="absolute top-1/2 -translate-y-1/2 left-1/2 right-0 border-t-2 border-current" />
+  </div>
+);
+
+const ConnectorQuartasToSemis = () => (
+  <div className="w-10 self-stretch relative text-[#00a859]/30">
+    <div className="absolute top-[104px] bottom-[104px] left-0 right-1/2 border-y-2 border-r-2 border-current rounded-r-lg" />
+    <div className="absolute top-1/2 -translate-y-1/2 left-1/2 right-0 border-t-2 border-current" />
+  </div>
+);
+
+const ConnectorSemisToFinal = () => (
+  <div className="w-10 self-stretch relative text-[#00a859]/30">
+    <div className="absolute top-[216px] bottom-[216px] left-0 right-1/2 border-y-2 border-r-2 border-current rounded-r-lg" />
+    <div className="absolute top-1/2 -translate-y-1/2 left-1/2 right-0 border-t-2 border-current" />
+  </div>
+);
+
 interface DisplayMatch {
   id: string;
   round: 'oitavas' | 'quartas' | 'semis' | 'final';
@@ -51,7 +72,7 @@ export function CupSchedule() {
   const oitavas: DisplayMatch[] = [
     { id: 'O1', round: 'oitavas', team1: 'Brasil', team2: 'Noruega', flag1: '🇧🇷', flag2: '🇳🇴', dateOrTime: '05/07 · 17:00' },
     { id: 'O2', round: 'oitavas', team1: 'México', team2: 'Equador', flag1: '🇲🇽', flag2: '🇪🇨', score1: liveScore.s1, score2: liveScore.s2, dateOrTime: '30/06', isLive: true, liveMin: liveScore.min },
-    { id: 'O3', round: 'oitavas', team1: 'Inglaterra', team2: 'RD Congo', flag1: '🏴󠁧󠁢󠁥󠁮ッグ󠁿', flag2: '🇨🇩', dateOrTime: '30/06 · 13:00' },
+    { id: 'O3', round: 'oitavas', team1: 'Inglaterra', team2: 'RD Congo', flag1: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', flag2: '🇨🇩', dateOrTime: '30/06 · 13:00' },
     { id: 'O4', round: 'oitavas', team1: 'Bélgica', team2: 'Senegal', flag1: '🇧🇪', flag2: '🇸🇳', dateOrTime: '30/06 · 17:00' },
     { id: 'O5', round: 'oitavas', team1: 'Estados Unidos', team2: 'Bósnia', flag1: '🇺🇸', flag2: '🇧🇦', dateOrTime: '30/06 · 21:00' },
     { id: 'O6', round: 'oitavas', team1: 'Espanha', team2: 'Áustria', flag1: '🇪🇸', flag2: '🇦🇹', dateOrTime: '02/07 · 16:00' },
@@ -60,19 +81,19 @@ export function CupSchedule() {
   ];
 
   const quartas: DisplayMatch[] = [
-    { id: 'Q1', round: 'quartas', team1: 'Vencedor Oitavas 1', team2: 'Vencedor Oitavas 2', flag1: '❓', flag2: '❓', dateOrTime: '09/07 · 13:00' },
-    { id: 'Q2', round: 'quartas', team1: 'Vencedor Oitavas 3', team2: 'Vencedor Oitavas 4', flag1: '❓', flag2: '❓', dateOrTime: '09/07 · 17:00' },
-    { id: 'Q3', round: 'quartas', team1: 'Vencedor Oitavas 5', team2: 'Vencedor Oitavas 6', flag1: '❓', flag2: '❓', dateOrTime: '10/07 · 13:00' },
-    { id: 'Q4', round: 'quartas', team1: 'Vencedor Oitavas 7', team2: 'França', flag1: '❓', flag2: '🇫🇷', dateOrTime: '10/07 · 17:00' }
+    { id: 'Q1', round: 'quartas', team1: 'Brasil', team2: 'México', flag1: '🇧🇷', flag2: '🇲🇽', dateOrTime: '09/07 · 13:00' },
+    { id: 'Q2', round: 'quartas', team1: 'Inglaterra', team2: 'Bélgica', flag1: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', flag2: '🇧🇪', dateOrTime: '09/07 · 17:00' },
+    { id: 'Q3', round: 'quartas', team1: 'Estados Unidos', team2: 'Espanha', flag1: '🇺🇸', flag2: '🇪🇸', dateOrTime: '10/07 · 13:00' },
+    { id: 'Q4', round: 'quartas', team1: 'Portugal', team2: 'França', flag1: '🇵🇹', flag2: '🇫🇷', dateOrTime: '10/07 · 17:00' }
   ];
 
   const semis: DisplayMatch[] = [
-    { id: 'S1', round: 'semis', team1: 'Vencedor Quartas 1', team2: 'Vencedor Quartas 2', flag1: '❓', flag2: '❓', dateOrTime: '14/07 · 17:00' },
-    { id: 'S2', round: 'semis', team1: 'Vencedor Quartas 3', team2: 'Vencedor Quartas 4', flag1: '❓', flag2: '❓', dateOrTime: '15/07 · 17:00' }
+    { id: 'S1', round: 'semis', team1: 'Brasil', team2: 'Inglaterra', flag1: '🇧🇷', flag2: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', dateOrTime: '14/07 · 17:00' },
+    { id: 'S2', round: 'semis', team1: 'Espanha', team2: 'França', flag1: '🇪🇸', flag2: '🇫🇷', dateOrTime: '15/07 · 17:00' }
   ];
 
   const final: DisplayMatch = {
-    id: 'F1', round: 'final', team1: 'Vencedor Semifinal 1', team2: 'Vencedor Semifinal 2', flag1: '❓', flag2: '❓', dateOrTime: '19/07 · 16:00'
+    id: 'F1', round: 'final', team1: 'Brasil', team2: 'França', flag1: '🇧🇷', flag2: '🇫🇷', dateOrTime: '19/07 · 16:00'
   };
 
   const MatchCard = ({ match }: { match: DisplayMatch }) => {
@@ -151,111 +172,113 @@ export function CupSchedule() {
         </div>
 
         {/* Tournament Bracket Diagram */}
-        <div className="bg-card/40 rounded-2xl border border-border p-6 shadow-md overflow-x-auto min-h-[580px] flex items-center">
-          <div className="flex gap-8 md:gap-12 min-w-[1000px] w-full items-stretch py-4">
+        <div className="bg-card/40 rounded-2xl border border-border p-6 shadow-md overflow-x-auto min-h-[580px]">
+          <div className="flex flex-col min-w-[1120px] w-full py-4 select-none">
             
-            {/* 1. ROUND OF 16 (OITAVAS) */}
-            <div className="flex flex-col justify-between w-60 gap-4">
-              <div className="text-center font-display font-extrabold text-[#00a859] text-xs uppercase tracking-wider py-1 bg-secondary rounded border border-border">
-                Oitavas De Final
-              </div>
-              <div className="flex flex-col justify-around flex-1 gap-3">
-                {oitavas.map(m => <MatchCard key={m.id} match={m} />)}
-              </div>
-            </div>
-
-            {/* Connecting lines column 1 */}
-            <div className="hidden lg:flex flex-col justify-between w-10 text-[#00a859]/60 select-none pointer-events-none gap-4">
-              <div className="text-center text-xs py-1 select-none opacity-0 border border-transparent">
-                Placeholder
-              </div>
-              <div className="flex-1 relative w-full">
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <path 
-                    d="M 0 6.25 H 50 V 18.75 H 0 M 50 12.5 H 100 M 0 31.25 H 50 V 43.75 H 0 M 50 37.5 H 100 M 0 56.25 H 50 V 68.75 H 0 M 50 62.5 H 100 M 0 81.25 H 50 V 93.75 H 0 M 50 87.5 H 100" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* 2. QUARTERFINALS (QUARTAS) */}
-            <div className="flex flex-col justify-between w-60 gap-4">
-              <div className="text-center font-display font-extrabold text-[#00a859] text-xs uppercase tracking-wider py-1 bg-secondary rounded border border-border">
-                Quartas De Final
-              </div>
-              <div className="flex flex-col justify-around flex-1 py-6 gap-8">
-                {quartas.map(m => <MatchCard key={m.id} match={m} />)}
-              </div>
-            </div>
-
-            {/* Connecting lines column 2 */}
-            <div className="hidden lg:flex flex-col justify-between w-10 text-[#00a859]/60 select-none pointer-events-none gap-4">
-              <div className="text-center text-xs py-1 select-none opacity-0 border border-transparent">
-                Placeholder
-              </div>
-              <div className="flex-1 relative w-full">
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <path 
-                    d="M 0 12.5 H 50 V 37.5 H 0 M 50 25 H 100 M 0 62.5 H 50 V 87.5 H 0 M 50 75 H 100" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* 3. SEMIFINALS (SEMIS) */}
-            <div className="flex flex-col justify-between w-60 gap-4">
-              <div className="text-center font-display font-extrabold text-[#00a859] text-xs uppercase tracking-wider py-1 bg-secondary rounded border border-border">
-                Semifinais
-              </div>
-              <div className="flex flex-col justify-around flex-1 py-12 gap-16">
-                {semis.map(m => <MatchCard key={m.id} match={m} />)}
-              </div>
-            </div>
-
-            {/* Connecting lines column 3 */}
-            <div className="hidden lg:flex flex-col justify-between w-10 text-[#00a859]/60 select-none pointer-events-none gap-4">
-              <div className="text-center text-xs py-1 select-none opacity-0 border border-transparent">
-                Placeholder
-              </div>
-              <div className="flex-1 relative w-full">
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <path 
-                    d="M 0 25 H 50 V 75 H 0 M 50 50 H 100" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* 4. GRAND FINAL */}
-            <div className="flex flex-col justify-between w-60 gap-4">
-              <div className="text-center font-display font-extrabold bg-[#00a859] text-white text-xs uppercase tracking-wider py-1 rounded border border-[#00a859] shadow-sm flex items-center justify-center gap-1">
+            {/* Headers Row */}
+            <div className="flex gap-0 w-full mb-6 font-display font-extrabold text-[#00a859] text-xs uppercase tracking-wider text-center">
+              <div className="w-60 py-1.5 bg-secondary rounded-lg border border-border">Oitavas de Final</div>
+              <div className="w-10"></div>
+              <div className="w-60 py-1.5 bg-secondary rounded-lg border border-border">Quartas de Final</div>
+              <div className="w-10"></div>
+              <div className="w-60 py-1.5 bg-secondary rounded-lg border border-border">Semifinais</div>
+              <div className="w-10"></div>
+              <div className="w-60 py-1.5 bg-[#00a859] text-white rounded-lg border border-[#00a859] shadow-sm flex items-center justify-center gap-1.5">
                 <AnimatedIcon icon="sparkles" size={14} colors="primary:#ffffff,secondary:#ffffff" />
                 Grande Final
               </div>
-              <div className="flex flex-col justify-center flex-1 gap-12">
-                <MatchCard match={final} />
+            </div>
 
+            {/* Tree Row */}
+            <div className="flex gap-0 w-full items-center">
+              {/* Upper Half and Lower Half wrapper */}
+              <div className="flex flex-col gap-6">
+                
+                {/* Upper Half (contains Q1 and Q2) */}
+                <div className="flex items-center">
+                  <div className="flex flex-col gap-4">
+                    {/* Q1 group */}
+                    <div className="flex items-center">
+                      <div className="flex flex-col gap-2 w-60">
+                        <MatchCard match={oitavas[0]} />
+                        <MatchCard match={oitavas[1]} />
+                      </div>
+                      <ConnectorOitavasToQuartas />
+                      <div className="w-60">
+                        <MatchCard match={quartas[0]} />
+                      </div>
+                    </div>
+                    
+                    {/* Q2 group */}
+                    <div className="flex items-center">
+                      <div className="flex flex-col gap-2 w-60">
+                        <MatchCard match={oitavas[2]} />
+                        <MatchCard match={oitavas[3]} />
+                      </div>
+                      <ConnectorOitavasToQuartas />
+                      <div className="w-60">
+                        <MatchCard match={quartas[1]} />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <ConnectorQuartasToSemis />
+                  
+                  <div className="w-60">
+                    <MatchCard match={semis[0]} />
+                  </div>
+                </div>
+
+                {/* Lower Half (contains Q3 and Q4) */}
+                <div className="flex items-center">
+                  <div className="flex flex-col gap-4">
+                    {/* Q3 group */}
+                    <div className="flex items-center">
+                      <div className="flex flex-col gap-2 w-60">
+                        <MatchCard match={oitavas[4]} />
+                        <MatchCard match={oitavas[5]} />
+                      </div>
+                      <ConnectorOitavasToQuartas />
+                      <div className="w-60">
+                        <MatchCard match={quartas[2]} />
+                      </div>
+                    </div>
+                    
+                    {/* Q4 group */}
+                    <div className="flex items-center">
+                      <div className="flex flex-col gap-2 w-60">
+                        <MatchCard match={oitavas[6]} />
+                        <MatchCard match={oitavas[7]} />
+                      </div>
+                      <ConnectorOitavasToQuartas />
+                      <div className="w-60">
+                        <MatchCard match={quartas[3]} />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <ConnectorQuartasToSemis />
+                  
+                  <div className="w-60">
+                    <MatchCard match={semis[1]} />
+                  </div>
+                </div>
+              </div>
+              
+              <ConnectorSemisToFinal />
+              
+              <div className="flex flex-col justify-center gap-12 w-60">
+                <MatchCard match={final} />
+                
                 {/* Champion Podium Box */}
                 <div className="border border-dashed border-[#ffcc00] bg-amber-500/5 rounded-xl p-4 flex flex-col items-center justify-center gap-2 h-[120px] shadow-sm">
                   <AnimatedIcon icon="award" size={32} colors="primary:#ffcc00,secondary:#ffcc00" className="animate-bounce" />
                   <div className="text-center">
                     <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Campeão FIFA™</div>
-                    <div className="font-display font-black text-[#ffcc00] text-sm tracking-wide">EM DISPUTA</div>
+                    <div className="font-display font-black text-[#ffcc00] text-sm tracking-wide flex items-center justify-center gap-1.5 mt-1 select-none">
+                      <ScrapbookFlag flag="🇧🇷" />
+                      <span>Brasil</span>
+                    </div>
                   </div>
                 </div>
               </div>
