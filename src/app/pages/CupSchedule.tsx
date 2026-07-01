@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 import { Footer } from '../components/Footer';
@@ -165,12 +165,21 @@ export function CupSchedule() {
             </div>
 
             {/* Connecting lines column 1 */}
-            <div className="hidden lg:flex flex-col justify-around w-6 text-muted-foreground select-none pointer-events-none">
-              <div className="flex flex-col items-center justify-around h-full py-8 text-lg font-bold text-[#00a859]">
-                <span>➔</span>
-                <span>➔</span>
-                <span>➔</span>
-                <span>➔</span>
+            <div className="hidden lg:flex flex-col justify-between w-10 text-[#00a859]/60 select-none pointer-events-none gap-4">
+              <div className="text-center text-xs py-1 select-none opacity-0 border border-transparent">
+                Placeholder
+              </div>
+              <div className="flex-1 relative w-full">
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <path 
+                    d="M 0 6.25 H 50 V 18.75 H 0 M 50 12.5 H 100 M 0 31.25 H 50 V 43.75 H 0 M 50 37.5 H 100 M 0 56.25 H 50 V 68.75 H 0 M 50 62.5 H 100 M 0 81.25 H 50 V 93.75 H 0 M 50 87.5 H 100" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                  />
+                </svg>
               </div>
             </div>
 
@@ -185,10 +194,21 @@ export function CupSchedule() {
             </div>
 
             {/* Connecting lines column 2 */}
-            <div className="hidden lg:flex flex-col justify-around w-6 text-muted-foreground select-none pointer-events-none">
-              <div className="flex flex-col items-center justify-around h-full py-16 text-lg font-bold text-[#00a859]">
-                <span>➔</span>
-                <span>➔</span>
+            <div className="hidden lg:flex flex-col justify-between w-10 text-[#00a859]/60 select-none pointer-events-none gap-4">
+              <div className="text-center text-xs py-1 select-none opacity-0 border border-transparent">
+                Placeholder
+              </div>
+              <div className="flex-1 relative w-full">
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <path 
+                    d="M 0 12.5 H 50 V 37.5 H 0 M 50 25 H 100 M 0 62.5 H 50 V 87.5 H 0 M 50 75 H 100" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                  />
+                </svg>
               </div>
             </div>
 
@@ -203,9 +223,21 @@ export function CupSchedule() {
             </div>
 
             {/* Connecting lines column 3 */}
-            <div className="hidden lg:flex flex-col justify-around w-6 text-[#00a859] font-bold text-lg select-none pointer-events-none">
-              <div className="flex flex-col items-center justify-center h-full">
-                <span>➔</span>
+            <div className="hidden lg:flex flex-col justify-between w-10 text-[#00a859]/60 select-none pointer-events-none gap-4">
+              <div className="text-center text-xs py-1 select-none opacity-0 border border-transparent">
+                Placeholder
+              </div>
+              <div className="flex-1 relative w-full">
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <path 
+                    d="M 0 25 H 50 V 75 H 0 M 50 50 H 100" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                  />
+                </svg>
               </div>
             </div>
 

@@ -1,6 +1,27 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Mail } from 'lucide-react';
+import { FcFeedback } from 'react-icons/fc';
+
+const FcInstagram = ({ className = '', style = {} }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    className={className} 
+    style={style}
+    fill="none"
+    strokeWidth="2"
+  >
+    <defs>
+      <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#fdf497" />
+        <stop offset="30%" stopColor="#fd5949" />
+        <stop offset="60%" stopColor="#d6249f" />
+        <stop offset="100%" stopColor="#285AEB" />
+      </linearGradient>
+    </defs>
+    <rect x="2.5" y="2.5" width="19" height="19" rx="5" stroke="url(#ig-grad)" fill="none" />
+    <circle cx="12" cy="12" r="4.5" stroke="url(#ig-grad)" fill="none" />
+    <circle cx="17.25" cy="6.75" r="1" fill="url(#ig-grad)" stroke="none" />
+  </svg>
+);
 
 export function Footer() {
   return (
@@ -30,14 +51,14 @@ export function Footer() {
               rel="noopener noreferrer" 
               className="flex items-center gap-2 hover:text-primary hover:underline transition-colors duration-200"
             >
-              <Instagram className="w-4.5 h-4.5 text-primary" />
+              <FcInstagram className="w-5 h-5" />
               <span className="font-medium">@jornalmanifesto</span>
             </a>
             <a 
               href="mailto:contato@jornalmanifesto.com" 
               className="flex items-center gap-2 hover:text-primary hover:underline transition-colors duration-200"
             >
-              <Mail className="w-4.5 h-4.5 text-primary" />
+              <FcFeedback className="w-5 h-5" />
               <span className="font-medium">contato@jornalmanifesto.com</span>
             </a>
           </div>

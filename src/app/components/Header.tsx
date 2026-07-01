@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User } from 'lucide-react';
+import { FcManager } from 'react-icons/fc';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedIcon } from './AnimatedIcon';
@@ -58,12 +58,14 @@ export function Header() {
 
           <button
             onClick={() => navigate('/profile')}
-            className="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center overflow-hidden"
+            className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border border-border ${
+              user?.profileImage ? '' : 'bg-secondary'
+            }`}
           >
             {user?.profileImage ? (
               <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
             ) : (
-              <User className="w-5 h-5 text-primary-foreground" />
+              <FcManager className="w-6 h-6" />
             )}
           </button>
         </div>
