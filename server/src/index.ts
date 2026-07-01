@@ -37,8 +37,12 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`\n========================================`);
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`========================================\n`);
-});
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`\n========================================`);
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`========================================\n`);
+  });
+}
+
+export default app;
