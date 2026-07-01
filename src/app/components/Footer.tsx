@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import { FcFeedback } from 'react-icons/fc';
 
 const FcInstagram = ({ className = '', style = {} }) => (
-  <svg 
-    viewBox="0 0 24 24" 
-    className={className} 
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
     style={style}
     fill="none"
     strokeWidth="2"
@@ -27,11 +27,11 @@ export function Footer() {
   return (
     <footer className="w-full bg-card border-t border-border py-10 px-6 mt-auto pb-24 md:pb-10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-        
+
         {/* Left Side: Editorial & About Link */}
         <div className="flex flex-col items-center md:items-start gap-3">
-          <Link 
-            to="/about" 
+          <Link
+            to="/about"
             className="text-primary hover:text-accent font-semibold tracking-wide text-lg transition-colors hover:underline decoration-2 underline-offset-4"
           >
             Sobre nós
@@ -45,17 +45,17 @@ export function Footer() {
         <div className="flex flex-col items-center md:items-end gap-3">
           <p className="text-sm font-bold text-foreground tracking-wider uppercase">Contato</p>
           <div className="flex flex-col sm:flex-row items-center gap-6 text-sm text-muted-foreground">
-            <a 
-              href="https://instagram.com/jornalmanifesto" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://instagram.com/manifesto_espro"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 hover:text-primary hover:underline transition-colors duration-200"
             >
               <FcInstagram className="w-5 h-5" />
               <span className="font-medium">@jornalmanifesto</span>
             </a>
-            <a 
-              href="mailto:contato@jornalmanifesto.com" 
+            <a
+              href="mailto:contato@jornalmanifesto.com"
               className="flex items-center gap-2 hover:text-primary hover:underline transition-colors duration-200"
             >
               <FcFeedback className="w-5 h-5" />
@@ -63,7 +63,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-        
+
       </div>
     </footer>
   );
