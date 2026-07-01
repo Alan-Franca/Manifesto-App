@@ -112,14 +112,21 @@ async function seedDatabase() {
   }
 }
 
+let isConnected = false;
+
 export async function connectDB() {
+  if (isConnected || mongoose.connection.readyState === 1) {
+    return;
+  }
+
   try {
     mongoose.set('strictQuery', true);
     await mongoose.connect(MONGODB_URI);
+    isConnected = true;
     console.log('=== MongoDB conectado com sucesso ===');
     await seedDatabase();
   } catch (error) {
     console.error('Erro de conexão com o MongoDB:', error);
-    process.exit(1);
+    throw error;
   }
 }
