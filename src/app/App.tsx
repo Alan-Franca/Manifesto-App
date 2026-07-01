@@ -8,6 +8,7 @@ import { Feed } from './pages/Feed';
 import { Profile } from './pages/Profile';
 import { Admin } from './pages/Admin';
 import { About } from './pages/About';
+import { CupSchedule } from './pages/CupSchedule';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -71,6 +72,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Admin />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/copa"
+        element={
+          <ProtectedRoute>
+            <CupSchedule />
           </ProtectedRoute>
         }
       />

@@ -1,10 +1,9 @@
-import React from 'react';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 import { Footer } from '../components/Footer';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Compass, Award, ArrowLeft } from 'lucide-react';
+import { AnimatedIcon } from '../components/AnimatedIcon';
 
 export function About() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export function About() {
             onClick={() => navigate('/feed')}
             className="flex items-center gap-2 hover:bg-secondary text-muted-foreground hover:text-primary transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <AnimatedIcon icon="arrowLeft" size={16} />
             <span>Voltar para o Feed</span>
           </Button>
         </div>
@@ -42,7 +41,7 @@ export function About() {
         <div className="space-y-8 mb-12">
           <section className="bg-card rounded-2xl p-8 border border-border shadow-sm">
             <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-accent" />
+              <AnimatedIcon icon="book" size={24} colors="primary:#540B0E,secondary:#540B0E" />
               Nossa História
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
@@ -57,7 +56,7 @@ export function About() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="bg-card rounded-2xl p-8 border border-border shadow-sm">
               <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                <Compass className="w-5 h-5 text-accent" />
+                <AnimatedIcon icon="compass" size={20} colors="primary:#540B0E,secondary:#540B0E" />
                 Nossa Missão
               </h2>
               <p className="text-muted-foreground text-sm leading-relaxed">
@@ -67,7 +66,7 @@ export function About() {
 
             <section className="bg-card rounded-2xl p-8 border border-border shadow-sm">
               <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-accent" />
+                <AnimatedIcon icon="award" size={20} colors="primary:#540B0E,secondary:#540B0E" />
                 Nossos Valores
               </h2>
               <ul className="list-disc pl-4 text-muted-foreground text-sm space-y-2 leading-relaxed">

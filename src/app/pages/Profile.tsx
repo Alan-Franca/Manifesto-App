@@ -7,8 +7,9 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Button } from '../components/ui/button';
 import { Switch } from '../components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Camera, Globe, Shield, Moon, Sun, LogOut, Crown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ScrapbookSticker } from '../components/ScrapbookSticker';
+import { AnimatedIcon } from '../components/AnimatedIcon';
 
 export function Profile() {
   const { user, updateUser, logout } = useAuth();
@@ -43,7 +44,7 @@ export function Profile() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 pt-20 pb-20 md:pb-8 px-4 max-w-2xl mx-auto w-full">
+      <main className="flex-1 pt-28 pb-20 md:pb-8 px-4 max-w-2xl mx-auto w-full">
         <h1 className="text-3xl mb-8">Meu Perfil</h1>
 
         {/* Profile Picture */}
@@ -60,7 +61,7 @@ export function Profile() {
                 )}
               </div>
               <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:opacity-90 transition-opacity">
-                <Camera className="w-4 h-4" />
+                <AnimatedIcon icon="camera" size={16} colors="primary:#ffffff,secondary:#ffffff" />
                 <input
                   type="file"
                   accept="image/*"
@@ -86,7 +87,7 @@ export function Profile() {
         {user?.isPremium ? (
           <div className="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-lg p-6 mb-6">
             <div className="flex items-center gap-3 mb-2">
-              <Crown className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              <AnimatedIcon icon="crown" size={24} colors="primary:#ca8a04,secondary:#facc15" />
               <h3 className="text-xl">Assinante Premium</h3>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -96,7 +97,7 @@ export function Profile() {
         ) : (
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 mb-6">
             <div className="flex items-center gap-3 mb-2">
-              <Crown className="w-6 h-6 text-primary" />
+              <AnimatedIcon icon="crown" size={24} colors="primary:#003049,secondary:#540B0E" />
               <h3 className="text-xl">Upgrade para Premium</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
@@ -115,7 +116,7 @@ export function Profile() {
         {user?.role === 'admin' && (
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 mb-6">
             <div className="flex items-center gap-3 mb-2">
-              <Shield className="w-6 h-6 text-primary" />
+              <AnimatedIcon icon="admin" size={24} colors="primary:#003049,secondary:#540B0E" />
               <h3 className="text-xl">Ações de Administrador</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
@@ -133,7 +134,7 @@ export function Profile() {
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Globe className="w-5 h-5 text-muted-foreground" />
+                <AnimatedIcon icon="globe" size={20} />
                 <div>
                   <p>Idioma</p>
                   <p className="text-sm text-muted-foreground">
@@ -158,7 +159,7 @@ export function Profile() {
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Shield className="w-5 h-5 text-muted-foreground" />
+                <AnimatedIcon icon="admin" size={20} />
                 <div>
                   <p>Autenticação de Dois Fatores</p>
                   <p className="text-sm text-muted-foreground">
@@ -175,9 +176,9 @@ export function Profile() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {theme === 'light' ? (
-                  <Sun className="w-5 h-5 text-muted-foreground" />
+                  <AnimatedIcon icon="sun" size={20} />
                 ) : (
-                  <Moon className="w-5 h-5 text-muted-foreground" />
+                  <AnimatedIcon icon="moon" size={20} />
                 )}
                 <div>
                   <p>Tema</p>
@@ -192,21 +193,26 @@ export function Profile() {
         </div>
 
         {/* Preferences */}
-        <div className="bg-card rounded-lg p-6 mb-6 border border-border">
-          <h3 className="mb-4">Interesses</h3>
-          <div className="flex flex-wrap gap-2">
-            {user?.preferences?.map((pref) => (
-              <span
-                key={pref}
-                className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
-              >
-                {pref}
-              </span>
-            ))}
-          </div>
+        <div className="bg-card rounded-xl p-6 mb-6 border border-border shadow-sm border-t-4 border-t-accent">
+          <h3 className="mb-4 font-display text-lg font-bold text-primary">Interesses Salvos</h3>
+          {(!user?.preferences || user.preferences.length === 0) ? (
+            <p className="text-sm text-muted-foreground mb-4">Você ainda não escolheu suas editorias preferidas.</p>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {user.preferences.map((pref) => (
+                <div
+                  key={pref}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/20 rounded-xl text-xs font-bold uppercase tracking-wider font-sans select-none shadow-sm"
+                >
+                  <ScrapbookSticker category={pref} size="sm" hasTape={false} />
+                  <span>{pref.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</span>
+                </div>
+              ))}
+            </div>
+          )}
           <button
             onClick={() => navigate('/preferences')}
-            className="mt-4 text-primary hover:underline text-sm"
+            className="mt-5 text-primary hover:text-accent font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
           >
             Editar interesses
           </button>
@@ -218,7 +224,7 @@ export function Profile() {
           variant="ghost"
           className="w-full border border-destructive text-destructive hover:bg-destructive/10"
         >
-          <LogOut className="w-4 h-4 mr-2" />
+          <AnimatedIcon icon="logout" size={18} colors="primary:#ef4444,secondary:#ef4444" className="mr-2" />
           Sair
         </Button>
       </main>

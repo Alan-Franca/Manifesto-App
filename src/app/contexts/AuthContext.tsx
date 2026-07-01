@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface User {
   id: string;
@@ -12,6 +12,38 @@ export interface User {
   twoFactorEnabled?: boolean;
   isPremium?: boolean;
   role?: string;
+}
+
+function migratePreferences(preferences?: string[]): string[] {
+  if (!preferences) return [];
+  const migrationMap: Record<string, string> = {
+    'Tecnologia': '🧠 TECNOLOGIA',
+    'Esportes': '📰 NOTÍCIAS',
+    'Moda': '🎭 CULTURA',
+    'Economia': '📰 NOTÍCIAS',
+    'Política': '📰 NOTÍCIAS',
+    'Cultura': '🎭 CULTURA',
+    'Entretenimento': '🎭 CULTURA',
+    'Ciência': '🧠 TECNOLOGIA',
+    'Saúde': '🌍 SOCIEDADE',
+    'Educação': '💼 TRABALHO E FUTURO'
+  };
+
+  const migrated = preferences.map(pref => {
+    if ([
+      '🧠 TECNOLOGIA',
+      '💼 TRABALHO E FUTURO',
+      '🎭 CULTURA',
+      '💡 EXPLICAÇÕES',
+      '🌍 SOCIEDADE',
+      '📰 NOTÍCIAS'
+    ].includes(pref)) {
+      return pref;
+    }
+    return migrationMap[pref] || null;
+  }).filter((pref): pref is string => pref !== null);
+
+  return Array.from(new Set(migrated));
 }
 
 export interface LoginResult {
@@ -68,7 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Map MongoDB _id to frontend id
             const mappedUser = {
               ...data.user,
-              id: data.user._id
+              id: data.user._id,
+              preferences: migratePreferences(data.user.preferences)
             };
             setUser(mappedUser);
             setIsAuthenticated(true);
@@ -122,7 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const mappedUser = {
           ...data.user,
-          id: data.user._id
+          id: data.user._id,
+          preferences: migratePreferences(data.user.preferences)
         };
         
         localStorage.setItem('manifesto_token', data.token);
@@ -158,7 +192,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         const mappedUser = {
           ...data.user,
-          id: data.user._id
+          id: data.user._id,
+          preferences: migratePreferences(data.user.preferences)
         };
         
         localStorage.setItem('manifesto_token', data.token);
@@ -221,7 +256,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
         const mappedUser = {
           ...data.user,
-          id: data.user._id
+          id: data.user._id,
+          preferences: migratePreferences(data.user.preferences)
         };
         
         localStorage.setItem('manifesto_token', data.token);
@@ -260,7 +296,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const resData = await res.json();
         const mappedUser = {
           ...resData.user,
-          id: resData.user._id
+          id: resData.user._id,
+          preferences: migratePreferences(resData.user.preferences)
         };
         setUser(mappedUser);
         return true;

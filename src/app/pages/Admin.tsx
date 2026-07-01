@@ -10,9 +10,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
-import { Edit, Trash, Plus, Shield, ShieldAlert, Crown, Users, Newspaper } from 'lucide-react';
+import { AnimatedIcon } from '../components/AnimatedIcon';
 
 export function Admin() {
   const { user } = useAuth();
@@ -258,11 +259,11 @@ export function Admin() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 pt-20 pb-20 md:pb-8 px-4 max-w-7xl mx-auto w-full">
+      <main className="flex-1 pt-28 pb-20 md:pb-8 px-4 max-w-7xl mx-auto w-full">
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
-              <Shield className="w-8 h-8 text-primary" /> Painel do Administrador
+              <AnimatedIcon icon="admin" size={32} /> Painel do Administrador
             </h1>
             <p className="text-muted-foreground mt-1">Gerencie os usuários e notícias do Jornal Manifesto</p>
           </div>
@@ -271,10 +272,10 @@ export function Admin() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 max-w-[400px] bg-secondary">
             <TabsTrigger value="news" className="flex items-center gap-2">
-              <Newspaper className="w-4 h-4" /> Notícias
+              <AnimatedIcon icon="newspaper" size={16} /> Notícias
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="w-4 h-4" /> Usuários
+              <AnimatedIcon icon="users" size={16} /> Usuários
             </TabsTrigger>
           </TabsList>
 
@@ -286,7 +287,7 @@ export function Admin() {
                 <p className="text-sm text-muted-foreground">Publique e gerencie matérias no portal</p>
               </div>
               <Button onClick={handleAddNewsClick} className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2">
-                <Plus className="w-4 h-4" /> Nova Notícia
+                <AnimatedIcon icon="plus" size={16} colors="primary:#ffffff,secondary:#ffffff" /> Nova Notícia
               </Button>
             </div>
 
@@ -328,7 +329,7 @@ export function Admin() {
                             )}
                           </TableCell>
                           <TableCell className="font-medium max-w-[300px] truncate">{item.title}</TableCell>
-                          <TableCell>{item.category}</TableCell>
+                          <TableCell className="font-semibold text-xs uppercase tracking-wider">{item.category.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</TableCell>
                           <TableCell>{item.date}</TableCell>
                           <TableCell>{item.readTime}</TableCell>
                           <TableCell>
@@ -344,10 +345,10 @@ export function Admin() {
                           </TableCell>
                           <TableCell className="text-right space-x-2">
                             <Button onClick={() => handleEditNewsClick(item)} variant="outline" size="icon" className="h-8 w-8 text-primary hover:bg-secondary">
-                              <Edit className="w-4 h-4" />
+                              <AnimatedIcon icon="edit" size={16} />
                             </Button>
                             <Button onClick={() => handleDeleteNews(item._id)} variant="outline" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10">
-                              <Trash className="w-4 h-4" />
+                              <AnimatedIcon icon="trash" size={16} colors="primary:#ef4444,secondary:#ef4444" />
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -410,7 +411,11 @@ export function Admin() {
                                 : 'bg-muted text-muted-foreground hover:bg-secondary'
                             }`}
                           >
-                            <Crown className={`w-3.5 h-3.5 ${u.isPremium ? 'fill-yellow-500' : ''}`} />
+                            <AnimatedIcon 
+                              icon="crown" 
+                              size={14} 
+                              colors={u.isPremium ? 'primary:#ca8a04,secondary:#facc15' : 'primary:#475569,secondary:#475569'} 
+                            />
                             {u.isPremium ? 'Premium' : 'Padrão'}
                           </Button>
                         </TableCell>
@@ -426,7 +431,7 @@ export function Admin() {
                                 : 'bg-muted text-muted-foreground hover:bg-secondary'
                             }`}
                           >
-                            <Shield className="w-3.5 h-3.5" />
+                            <AnimatedIcon icon="admin" size={14} />
                             {u.role === 'admin' ? 'Administrador' : 'Leitor'}
                           </Button>
                         </TableCell>
@@ -438,7 +443,7 @@ export function Admin() {
                             disabled={u._id === user?.id}
                             className="h-8 w-8 text-destructive hover:bg-destructive/10"
                           >
-                            <Trash className="w-4 h-4" />
+                            <AnimatedIcon icon="trash" size={16} colors="primary:#ef4444,secondary:#ef4444" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -456,7 +461,7 @@ export function Admin() {
         <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-primary text-xl flex items-center gap-2">
-              <Newspaper className="w-5 h-5" />
+              <AnimatedIcon icon="newspaper" size={20} />
               {editingNews ? 'Editar Notícia' : 'Publicar Nova Notícia'}
             </DialogTitle>
             <DialogDescription>
@@ -491,13 +496,19 @@ export function Admin() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="news-category">Categoria *</Label>
-                <Input
-                  id="news-category"
-                  value={newsCategory}
-                  onChange={(e) => setNewsCategory(e.target.value)}
-                  placeholder="Ex: Tecnologia, Ciência"
-                  required
-                />
+                <Select value={newsCategory} onValueChange={setNewsCategory}>
+                  <SelectTrigger id="news-category" className="w-full">
+                    <SelectValue placeholder="Selecione uma editoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="🧠 TECNOLOGIA">🧠 TECNOLOGIA</SelectItem>
+                    <SelectItem value="💼 TRABALHO E FUTURO">💼 TRABALHO E FUTURO</SelectItem>
+                    <SelectItem value="🎭 CULTURA">🎭 CULTURA</SelectItem>
+                    <SelectItem value="💡 EXPLICAÇÕES">💡 EXPLICAÇÕES</SelectItem>
+                    <SelectItem value="🌍 SOCIEDADE">🌍 SOCIEDADE</SelectItem>
+                    <SelectItem value="📰 NOTÍCIAS">📰 NOTÍCIAS</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
