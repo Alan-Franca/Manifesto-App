@@ -10,26 +10,27 @@ export function Login() {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   // States for 2FA
   const [is2FA, setIs2FA] = useState(false);
   const [tempUserId, setTempUserId] = useState('');
   const [code2FA, setCode2FA] = useState('');
-  const [dev2faCode, setDev2faCode] = useState('');
 
   // States for Pending Registration Verification
   const [isPendingVerification, setIsPendingVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpData, setOtpData] = useState({ emailCode: '', phoneCode: '' });
-  const [devVerificationCodes, setDevVerificationCodes] = useState<{ emailCode?: string; phoneCode?: string } | null>(null);
 
-  const { login, verify2FA, verifyRegistration } = useAuth();
+  const { login, verify2FA, resend2FACode, verifyRegistration, resendVerificationCode } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
     setIsLoading(true);
 
     const result = await login(emailOrPhone, password);
@@ -40,18 +41,11 @@ export function Login() {
     } else if (result.require2FA) {
       setIs2FA(true);
       setTempUserId(result.tempUserId || '');
-      if (result.otpCode) {
-        setDev2faCode(result.otpCode);
-      }
+      setInfoMessage('Código de autenticação enviado para o seu e-mail cadastrado.');
     } else if (result.verificationRequired) {
       setIsPendingVerification(true);
       setPendingEmail(result.email || '');
-      if (result.emailCode && result.phoneCode) {
-        setDevVerificationCodes({
-          emailCode: result.emailCode,
-          phoneCode: result.phoneCode
-        });
-      }
+      setInfoMessage('Sua conta precisa de verificação inicial. Códigos enviados por e-mail e SMS.');
     } else {
       setError(result.error || 'Email/telefone ou senha incorretos');
     }
@@ -60,6 +54,7 @@ export function Login() {
   const handle2FASubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
     setIsLoading(true);
 
     const success = await verify2FA(tempUserId, code2FA);
@@ -68,13 +63,29 @@ export function Login() {
     if (success) {
       navigate('/preferences');
     } else {
-      setError('Código de 2 fatores incorreto ou expirado');
+      setError('Código 2FA incorreto ou expirado');
+    }
+  };
+
+  const handleResend2FA = async () => {
+    setError('');
+    setInfoMessage('');
+    setResendLoading(true);
+
+    const result = await resend2FACode(tempUserId);
+    setResendLoading(false);
+
+    if (result.success) {
+      setInfoMessage(result.message || 'Novo código 2FA enviado para seu e-mail!');
+    } else {
+      setError(result.error || 'Falha ao reenviar código 2FA');
     }
   };
 
   const handlePendingVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
     setIsLoading(true);
 
     const success = await verifyRegistration(pendingEmail, otpData.emailCode, otpData.phoneCode);
@@ -87,6 +98,21 @@ export function Login() {
     }
   };
 
+  const handleResendVerification = async () => {
+    setError('');
+    setInfoMessage('');
+    setResendLoading(true);
+
+    const result = await resendVerificationCode(pendingEmail);
+    setResendLoading(false);
+
+    if (result.success) {
+      setInfoMessage(result.message || 'Novos códigos enviados por e-mail e SMS!');
+    } else {
+      setError(result.error || 'Falha ao reenviar códigos');
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md">
@@ -95,35 +121,26 @@ export function Login() {
           
           {is2FA ? (
             <>
-              <h1 className="text-3xl mb-2">Autenticação de Dois Fatores</h1>
-              <p className="text-muted-foreground">Digite o código 2FA enviado para seu e-mail</p>
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Autenticação de Dois Fatores</h1>
+              <p className="text-muted-foreground text-sm">Digite o código de 6 dígitos enviado ao seu e-mail</p>
             </>
           ) : isPendingVerification ? (
             <>
-              <h1 className="text-3xl mb-2">Verificar Cadastro</h1>
-              <p className="text-muted-foreground font-medium text-destructive">
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Verificar Cadastro</h1>
+              <p className="text-muted-foreground text-sm font-medium text-destructive">
                 Verificação necessária para ativar sua conta
               </p>
             </>
           ) : (
             <>
-              <h1 className="text-3xl mb-2">Bem-vindo de volta</h1>
-              <p className="text-muted-foreground">Entre para continuar lendo</p>
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Bem-vindo de volta</h1>
+              <p className="text-muted-foreground text-sm">Entre para continuar lendo o Jornal Manifesto</p>
             </>
           )}
         </div>
 
         {is2FA ? (
           <form onSubmit={handle2FASubmit} className="space-y-4">
-            {dev2faCode && (
-              <div className="bg-primary/10 border border-primary/20 text-xs p-3 rounded-lg text-left">
-                <p className="font-semibold text-primary mb-1">🔑 Código 2FA de Teste (Simulador):</p>
-                <p>Código: <code className="font-bold bg-muted px-1.5 py-0.5 rounded text-sm">{dev2faCode}</code></p>
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  * Em produção real, este código é enviado via e-mail.
-                </p>
-              </div>
-            )}
             <div className="space-y-2">
               <Label>Código 2FA (6 dígitos)</Label>
               <Input
@@ -133,38 +150,51 @@ export function Login() {
                 onChange={(e) => setCode2FA(e.target.value)}
                 maxLength={6}
                 required
-                className="text-center font-mono text-lg tracking-widest"
+                className="text-center font-mono text-xl tracking-[0.5em] py-3 font-bold"
                 autoFocus
               />
             </div>
 
+            {infoMessage && (
+              <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
+            )}
+
             {error && (
-              <p className="text-destructive text-sm text-center">{error}</p>
+              <p className="text-destructive text-sm font-medium text-center bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">{error}</p>
             )}
 
             <Button type="submit" className="w-full font-semibold" size="lg" disabled={isLoading}>
               {isLoading ? 'Verificando...' : 'Confirmar Acesso'}
             </Button>
 
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIs2FA(false)}
-              disabled={isLoading}
-            >
-              Voltar ao login
-            </Button>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full text-xs font-semibold"
+                onClick={handleResend2FA}
+                disabled={resendLoading || isLoading}
+              >
+                {resendLoading ? 'Reenviando...' : 'Reenviar Código por E-mail'}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-xs text-muted-foreground"
+                onClick={() => {
+                  setIs2FA(false);
+                  setError('');
+                  setInfoMessage('');
+                }}
+                disabled={isLoading}
+              >
+                Voltar ao login
+              </Button>
+            </div>
           </form>
         ) : isPendingVerification ? (
           <form onSubmit={handlePendingVerifySubmit} className="space-y-4">
-            {devVerificationCodes && (
-              <div className="bg-primary/10 border border-primary/20 text-xs p-3 rounded-lg text-left font-sans">
-                <p className="font-semibold text-primary mb-1">🔑 Códigos de Teste (Simulador):</p>
-                <p>Código E-mail: <code className="font-bold bg-muted px-1.5 py-0.5 rounded text-sm">{devVerificationCodes.emailCode}</code></p>
-                <p>Código Telefone: <code className="font-bold bg-muted px-1.5 py-0.5 rounded text-sm">{devVerificationCodes.phoneCode}</code></p>
-              </div>
-            )}
             <div className="space-y-2">
               <Label>Código enviado para o E-mail ({pendingEmail})</Label>
               <Input
@@ -179,7 +209,7 @@ export function Login() {
             </div>
 
             <div className="space-y-2">
-              <Label>Código enviado para o Telefone</Label>
+              <Label>Código enviado para o Telefone (SMS)</Label>
               <Input
                 type="text"
                 placeholder="000000"
@@ -191,23 +221,43 @@ export function Login() {
               />
             </div>
 
+            {infoMessage && (
+              <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
+            )}
+
             {error && (
-              <p className="text-destructive text-sm text-center">{error}</p>
+              <p className="text-destructive text-sm font-medium text-center bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">{error}</p>
             )}
 
             <Button type="submit" className="w-full font-semibold" size="lg" disabled={isLoading}>
               {isLoading ? 'Verificando...' : 'Confirmar e Ativar Conta'}
             </Button>
 
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsPendingVerification(false)}
-              disabled={isLoading}
-            >
-              Cancelar e voltar
-            </Button>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full text-xs font-semibold"
+                onClick={handleResendVerification}
+                disabled={resendLoading || isLoading}
+              >
+                {resendLoading ? 'Reenviando...' : 'Reenviar Códigos (E-mail e SMS)'}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-xs text-muted-foreground"
+                onClick={() => {
+                  setIsPendingVerification(false);
+                  setError('');
+                  setInfoMessage('');
+                }}
+                disabled={isLoading}
+              >
+                Cancelar e voltar
+              </Button>
+            </div>
           </form>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">

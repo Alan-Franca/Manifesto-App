@@ -1,4 +1,3 @@
-import React from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
 
 interface ScrapbookStickerProps {

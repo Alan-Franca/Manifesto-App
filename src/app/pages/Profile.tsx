@@ -48,69 +48,37 @@ export function Profile() {
         <h1 className="text-3xl mb-8">Meu Perfil</h1>
 
         {/* Profile Picture */}
-        <div className="bg-card rounded-lg p-6 mb-6 border border-border">
+        <div className="bg-card rounded-lg p-6 mb-6 border border-border shadow-sm">
           <div className="flex items-center gap-6">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center overflow-hidden shadow-inner">
                 {user?.profileImage ? (
                   <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl text-primary-foreground">
+                  <span className="text-3xl text-primary-foreground font-bold font-display">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
-              <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:opacity-90 transition-opacity">
+              <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:opacity-90 transition-opacity shadow-md">
                 <AnimatedIcon icon="camera" size={16} colors="primary:#ffffff,secondary:#ffffff" />
                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
                   onChange={handleImageUpload}
-                  disabled={!user?.isPremium}
                 />
               </label>
             </div>
             <div>
-              <h2 className="text-xl mb-1">{user?.name}</h2>
-              <p className="text-muted-foreground">{user?.email}</p>
-              {!user?.isPremium && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Foto de perfil disponível apenas para Premium
-                </p>
-              )}
+              <h2 className="text-xl font-bold font-display mb-1">{user?.name}</h2>
+              <p className="text-muted-foreground text-sm">{user?.email}</p>
+              <p className="text-xs text-primary font-medium mt-2 flex items-center gap-1">
+                ✓ Conta Gratuita Manifesto
+              </p>
             </div>
           </div>
         </div>
-
-        {/* Premium Status */}
-        {user?.isPremium ? (
-          <div className="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-lg p-6 mb-6">
-            <div className="flex items-center gap-3 mb-2">
-              <AnimatedIcon icon="crown" size={24} colors="primary:#ca8a04,secondary:#facc15" />
-              <h3 className="text-xl">Assinante Premium</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Você tem acesso a todos os recursos exclusivos
-            </p>
-          </div>
-        ) : (
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 mb-6">
-            <div className="flex items-center gap-3 mb-2">
-              <AnimatedIcon icon="crown" size={24} colors="primary:#003049,secondary:#540B0E" />
-              <h3 className="text-xl">Upgrade para Premium</h3>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              Sem anúncios, customização de perfil e notificações por email/SMS
-            </p>
-            <Button 
-              variant="default" 
-              onClick={() => updateUser({ isPremium: true })}
-            >
-              Assinar Agora
-            </Button>
-          </div>
-        )}
 
         {/* Admin Actions */}
         {user?.role === 'admin' && (

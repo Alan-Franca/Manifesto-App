@@ -5,7 +5,7 @@ import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth
 const router = Router();
 
 // 1. GET ALL USERS (Admin only)
-router.get('/users', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
+router.get('/users', authMiddleware as any, adminMiddleware as any, async (_req: AuthRequest, res: Response): Promise<any> => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     return res.json(users);
@@ -15,10 +15,10 @@ router.get('/users', authMiddleware as any, adminMiddleware as any, async (req: 
   }
 });
 
-// 2. UPDATE USER DETAILS/ROLE/PREMIUM (Admin only)
+// 2. UPDATE USER DETAILS/ROLE (Admin only)
 router.put('/users/:id', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
   const { id } = req.params;
-  const { role, isPremium, name, email, phone } = req.body;
+  const { role, name, email, phone } = req.body;
 
   try {
     const user = await User.findById(id);
@@ -32,7 +32,6 @@ router.put('/users/:id', authMiddleware as any, adminMiddleware as any, async (r
     }
 
     if (role !== undefined) user.role = role;
-    if (isPremium !== undefined) user.isPremium = !!isPremium;
     if (name !== undefined) user.name = name;
     if (email !== undefined) user.email = email;
     if (phone !== undefined) user.phone = phone;

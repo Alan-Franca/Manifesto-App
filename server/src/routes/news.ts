@@ -5,7 +5,7 @@ import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth
 const router = Router();
 
 // 1. GET ALL NEWS
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (_req: any, res: any) => {
   try {
     const news = await News.find().sort({ createdAt: -1 });
     return res.json(news);
@@ -17,7 +17,7 @@ router.get('/', async (req: any, res: any) => {
 
 // 2. CREATE NEWS (Admin only)
 router.post('/', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
-  const { title, summary, category, image, readTime, date, isPremium } = req.body;
+  const { title, summary, category, image, readTime, date } = req.body;
 
   try {
     if (!title || !summary || !category || !date) {
@@ -31,7 +31,6 @@ router.post('/', authMiddleware as any, adminMiddleware as any, async (req: Auth
       image: image || '',
       readTime: readTime || '5 min',
       date,
-      isPremium: !!isPremium
     });
 
     await newsItem.save();
@@ -44,7 +43,7 @@ router.post('/', authMiddleware as any, adminMiddleware as any, async (req: Auth
 
 // 3. UPDATE NEWS (Admin only)
 router.put('/:id', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
-  const { title, summary, category, image, readTime, date, isPremium } = req.body;
+  const { title, summary, category, image, readTime, date } = req.body;
   const { id } = req.params;
 
   try {
@@ -59,7 +58,6 @@ router.put('/:id', authMiddleware as any, adminMiddleware as any, async (req: Au
     if (image !== undefined) newsItem.image = image;
     if (readTime !== undefined) newsItem.readTime = readTime;
     if (date !== undefined) newsItem.date = date;
-    if (isPremium !== undefined) newsItem.isPremium = !!isPremium;
 
     await newsItem.save();
     return res.json(newsItem);

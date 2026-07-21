@@ -66,10 +66,8 @@ router.post('/register', async (req: any, res: any) => {
         await sendSMSOTP(phone, phoneCode);
 
         return res.json({
-          message: 'Usuário pré-cadastrado. Novos códigos de verificação foram enviados.',
+          message: 'Usuário pré-cadastrado. Novos códigos de verificação foram enviados por e-mail e SMS.',
           email,
-          emailCode, // returned for dev ease
-          phoneCode, // returned for dev ease
         });
       } else {
         return res.status(400).json({ error: 'E-mail ou Telefone já cadastrado' });
@@ -99,10 +97,8 @@ router.post('/register', async (req: any, res: any) => {
     await sendSMSOTP(phone, phoneCode);
 
     return res.status(201).json({
-      message: 'Cadastro inicial realizado com sucesso. Códigos de verificação enviados.',
+      message: 'Cadastro inicial realizado com sucesso. Códigos de verificação enviados por e-mail e SMS.',
       email,
-      emailCode, // returned for dev ease
-      phoneCode, // returned for dev ease
     });
   } catch (error: any) {
     console.error('Erro no cadastro:', error);
@@ -204,8 +200,6 @@ router.post('/login', async (req: any, res: any) => {
       return res.status(202).json({
         verificationRequired: true,
         email: user.email,
-        emailCode,
-        phoneCode,
         message: 'Por favor, verifique seu e-mail e telefone para concluir o cadastro.'
       });
     }
@@ -225,7 +219,6 @@ router.post('/login', async (req: any, res: any) => {
       return res.json({
         require2FA: true,
         tempUserId: user._id,
-        otpCode, // returned for dev ease
         message: 'Código de autenticação de dois fatores enviado'
       });
     }
@@ -265,7 +258,7 @@ router.post('/verify-2fa', async (req: any, res: any) => {
     }
 
     if (user.loginOtpExpires && new Date() > user.loginOtpExpires) {
-      return res.status(400).json({ error: 'Código 2FA expirado. Tente logar novamente.' });
+      return res.status(400).json({ error: 'Código 2FA expirado. Solicite um novo código.' });
     }
 
     // Code verified, clear it
@@ -305,7 +298,7 @@ router.get('/me', authMiddleware as any, async (req: AuthRequest, res: Response)
 
 // 6. UPDATE PROFILE DETAILS
 router.put('/update', authMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
-  const { name, gender, preferences, language, twoFactorEnabled, isPremium, profileImage } = req.body;
+  const { name, gender, preferences, language, twoFactorEnabled, profileImage } = req.body;
 
   try {
     const user = await User.findById(req.userId);
@@ -319,7 +312,6 @@ router.put('/update', authMiddleware as any, async (req: AuthRequest, res: Respo
     if (preferences !== undefined) user.preferences = preferences;
     if (language !== undefined) user.language = language;
     if (twoFactorEnabled !== undefined) user.twoFactorEnabled = twoFactorEnabled;
-    if (isPremium !== undefined) user.isPremium = isPremium;
     if (profileImage !== undefined) user.profileImage = profileImage;
 
     await user.save();
@@ -334,6 +326,75 @@ router.put('/update', authMiddleware as any, async (req: AuthRequest, res: Respo
   } catch (error) {
     console.error('Erro ao atualizar perfil:', error);
     return res.status(500).json({ error: 'Erro interno ao atualizar perfil' });
+  }
+});
+
+// 7. RESEND 2FA CODE
+router.post('/resend-2fa', async (req: any, res: any) => {
+  const { tempUserId } = req.body;
+
+  try {
+    if (!tempUserId) {
+      return res.status(400).json({ error: 'Usuário temporário é obrigatório' });
+    }
+
+    const user = await User.findById(tempUserId);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    const otpCode = generateOTP();
+    const expires = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+
+    user.loginOtpCode = otpCode;
+    user.loginOtpExpires = expires;
+    await user.save();
+
+    await sendEmailOTP(user.email, otpCode);
+
+    return res.json({
+      message: 'Novo código de autenticação de dois fatores enviado com sucesso.'
+    });
+  } catch (error) {
+    console.error('Erro ao reenviar código 2FA:', error);
+    return res.status(500).json({ error: 'Erro interno ao reenviar código 2FA' });
+  }
+});
+
+// 8. RESEND REGISTRATION VERIFICATION CODES
+router.post('/resend-verification', async (req: any, res: any) => {
+  const { email } = req.body;
+
+  try {
+    if (!email) {
+      return res.status(400).json({ error: 'E-mail é obrigatório' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    if (user.emailVerified && user.phoneVerified) {
+      return res.status(400).json({ error: 'Este usuário já está com o cadastro verificado' });
+    }
+
+    const emailCode = generateOTP();
+    const phoneCode = generateOTP();
+
+    user.emailVerificationCode = emailCode;
+    user.phoneVerificationCode = phoneCode;
+    await user.save();
+
+    await sendEmailOTP(user.email, emailCode);
+    await sendSMSOTP(user.phone, phoneCode);
+
+    return res.json({
+      message: 'Novos códigos de verificação foram enviados por e-mail e SMS com sucesso.'
+    });
+  } catch (error) {
+    console.error('Erro ao reenviar códigos de verificação:', error);
+    return res.status(500).json({ error: 'Erro interno ao reenviar códigos' });
   }
 });
 

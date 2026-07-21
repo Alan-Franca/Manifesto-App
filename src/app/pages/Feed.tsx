@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 import { NewsCard } from '../components/NewsCard';
@@ -106,18 +106,6 @@ export function Feed() {
   const featuredNews = filteredNews[0];
   const gridNews = filteredNews.slice(1);
 
-  // Simular anúncios para usuários não premium
-  const AdBanner = () => (
-    <div className="bg-muted/50 rounded-xl p-8 text-center border-2 border-dashed border-border transition-all duration-300 hover:bg-muted/70">
-      <p className="text-muted-foreground text-xs uppercase tracking-widest font-bold mb-2">Publicidade</p>
-      <p className="text-sm font-medium mb-3">
-        Remova anúncios e tenha acesso a recursos exclusivos com o plano Premium.
-      </p>
-      <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold">
-        Seja Premium
-      </Button>
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
@@ -138,11 +126,6 @@ export function Feed() {
             {user?.role === 'admin' && (
               <Button onClick={() => window.location.href = '/admin'} variant="outline" className="border-primary text-primary hover:bg-primary/5 font-semibold text-xs py-1">
                 Painel Admin
-              </Button>
-            )}
-            {!user?.isPremium && (
-              <Button onClick={() => window.location.href = '/profile'} className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-1 shadow-sm">
-                Experimentar Premium
               </Button>
             )}
           </div>
@@ -296,12 +279,6 @@ export function Feed() {
                             alt={featuredNews.title} 
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103" 
                           />
-                          {featuredNews.isPremium && (
-                            <div className="absolute top-4 right-4 bg-amber-500 text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded flex items-center gap-1 shadow-md">
-                              <AnimatedIcon icon="sparkles" size={14} colors="primary:#ffffff,secondary:#ffffff" />
-                              Premium
-                            </div>
-                          )}
                         </div>
                       )}
                       
@@ -337,16 +314,8 @@ export function Feed() {
                 {/* 3B. REMAINING NEWS GRID */}
                 {gridNews.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {gridNews.map((news, index) => (
-                      <React.Fragment key={news._id || news.id}>
-                        <NewsCard {...news} />
-                        {/* Mostrar anúncio para não premium */}
-                        {!user?.isPremium && (index + 1) % 3 === 0 && index !== gridNews.length - 1 && (
-                          <div className="md:col-span-2 lg:col-span-3 py-4">
-                            <AdBanner />
-                          </div>
-                        )}
-                      </React.Fragment>
+                    {gridNews.map((news) => (
+                      <NewsCard key={news._id || news.id} {...news} />
                     ))}
                   </div>
                 )}
@@ -354,20 +323,6 @@ export function Feed() {
               </div>
             )}
           </>
-        )}
-
-        {/* Premium Banner CTA */}
-        {!user?.isPremium && !loading && !error && (
-          <div className="mt-14 bg-gradient-to-r from-primary/10 via-primary/5 to-card border border-primary/20 rounded-2xl p-8 text-center shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8"></div>
-            <h3 className="text-2xl font-display font-bold text-primary mb-2">Assine o Manifesto Premium</h3>
-            <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-6">
-              Apoie o jornalismo analítico e tenha acesso a uma experiência totalmente livre de publicidade, além de personalização de feed inteligente.
-            </p>
-            <Button onClick={() => window.location.href = '/profile'} size="lg" className="bg-primary hover:bg-primary/95 text-primary-foreground font-bold shadow-md hover:shadow-lg transition-all rounded-xl px-8">
-              Assine Agora
-            </Button>
-          </div>
         )}
       </main>
 

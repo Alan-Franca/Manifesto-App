@@ -29,10 +29,6 @@ const NewsSchema = new Schema(
       type: String,
       required: true,
     },
-    isPremium: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,

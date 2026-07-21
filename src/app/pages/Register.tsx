@@ -21,16 +21,18 @@ export function Register() {
     emailCode: '',
     phoneCode: ''
   });
-  const [devCodes, setDevCodes] = useState<{ emailCode?: string; phoneCode?: string } | null>(null);
   const [error, setError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
-  const { register, verifyRegistration } = useAuth();
+  const { register, verifyRegistration, resendVerificationCode } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('As senhas não coincidem');
@@ -48,12 +50,7 @@ export function Register() {
 
     if (result.success) {
       setIsVerifying(true);
-      if (result.emailCode && result.phoneCode) {
-        setDevCodes({
-          emailCode: result.emailCode,
-          phoneCode: result.phoneCode
-        });
-      }
+      setInfoMessage('Códigos de verificação enviados por e-mail e SMS.');
     } else {
       setError(result.error || 'Email ou telefone já cadastrado');
     }
@@ -62,6 +59,7 @@ export function Register() {
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
     setIsLoading(true);
 
     const success = await verifyRegistration(
@@ -75,6 +73,21 @@ export function Register() {
       navigate('/preferences');
     } else {
       setError('Código de e-mail ou telefone incorreto');
+    }
+  };
+
+  const handleResendCodes = async () => {
+    setError('');
+    setInfoMessage('');
+    setResendLoading(true);
+
+    const result = await resendVerificationCode(formData.email);
+    setResendLoading(false);
+
+    if (result.success) {
+      setInfoMessage(result.message || 'Novos códigos de verificação enviados!');
+    } else {
+      setError(result.error || 'Falha ao reenviar códigos');
     }
   };
 
@@ -100,43 +113,33 @@ export function Register() {
           
           {isVerifying ? (
             <>
-              <h1 className="text-3xl mb-2">Verificar Conta</h1>
-              <p className="text-muted-foreground">
-                Enviamos os códigos de confirmação para seus contatos
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Verificar Conta</h1>
+              <p className="text-muted-foreground text-sm">
+                Enviamos os códigos de confirmação por e-mail e SMS
               </p>
             </>
           ) : (
             <>
-              <h1 className="text-3xl mb-2">Criar conta</h1>
-              <p className="text-muted-foreground">Cadastre-se para começar a ler</p>
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Criar conta</h1>
+              <p className="text-muted-foreground text-sm">Cadastre-se para começar a ler o Jornal Manifesto gratuitamente</p>
             </>
           )}
         </div>
 
         {isVerifying ? (
           <form onSubmit={handleVerifySubmit} className="space-y-4">
-            {devCodes && (
-              <div className="bg-primary/10 border border-primary/20 text-xs p-3 rounded-lg text-left">
-                <p className="font-semibold text-primary mb-1">🔑 Códigos de Teste (Simulador):</p>
-                <p>Código E-mail: <code className="font-bold bg-muted px-1.5 py-0.5 rounded text-sm">{devCodes.emailCode}</code></p>
-                <p>Código Telefone: <code className="font-bold bg-muted px-1.5 py-0.5 rounded text-sm">{devCodes.phoneCode}</code></p>
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  * Em produção real, esses códigos são enviados via SMTP e Twilio.
-                </p>
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label>Código enviado para o E-mail ({formData.email})</Label>
               <Input
                 type="text"
                 name="emailCode"
-                placeholder="Digite o código de 6 dígitos"
+                placeholder="000000"
                 value={otpData.emailCode}
                 onChange={handleOtpChange}
                 maxLength={6}
                 required
                 className="text-center font-mono text-lg tracking-widest"
+                autoFocus
               />
             </div>
 
@@ -145,7 +148,7 @@ export function Register() {
               <Input
                 type="text"
                 name="phoneCode"
-                placeholder="Digite o código de 6 dígitos"
+                placeholder="000000"
                 value={otpData.phoneCode}
                 onChange={handleOtpChange}
                 maxLength={6}
@@ -154,23 +157,43 @@ export function Register() {
               />
             </div>
 
+            {infoMessage && (
+              <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
+            )}
+
             {error && (
-              <p className="text-destructive text-sm text-center">{error}</p>
+              <p className="text-destructive text-sm font-medium text-center bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">{error}</p>
             )}
 
             <Button type="submit" className="w-full font-semibold" size="lg" disabled={isLoading}>
               {isLoading ? 'Verificando...' : 'Confirmar e Ativar Conta'}
             </Button>
 
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsVerifying(false)}
-              disabled={isLoading}
-            >
-              Voltar ao cadastro
-            </Button>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full text-xs font-semibold"
+                onClick={handleResendCodes}
+                disabled={resendLoading || isLoading}
+              >
+                {resendLoading ? 'Reenviando...' : 'Reenviar Códigos (E-mail e SMS)'}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-xs text-muted-foreground"
+                onClick={() => {
+                  setIsVerifying(false);
+                  setError('');
+                  setInfoMessage('');
+                }}
+                disabled={isLoading}
+              >
+                Voltar ao cadastro
+              </Button>
+            </div>
           </form>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">

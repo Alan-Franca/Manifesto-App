@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
@@ -121,7 +121,7 @@ export function CupBanner() {
     setMatches(getInitialMatches());
 
     // Listen to changes from other components
-    const handleStorageUpdate = (e: Event) => {
+    const handleStorageUpdate = (_e: Event) => {
       const stored = sessionStorage.getItem('cup_matches');
       if (stored) {
         setMatches(JSON.parse(stored));

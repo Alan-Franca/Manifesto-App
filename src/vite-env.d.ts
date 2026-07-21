@@ -11,5 +11,6 @@ declare namespace JSX {
       style?: React.CSSProperties;
     }, HTMLElement>;
   }
-}
 
+declare module 'canvas-confetti';
+declare module 'react-dom/client';

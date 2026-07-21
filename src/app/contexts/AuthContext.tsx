@@ -10,7 +10,6 @@ export interface User {
   preferences?: string[];
   language?: string;
   twoFactorEnabled?: boolean;
-  isPremium?: boolean;
   role?: string;
 }
 
@@ -53,25 +52,22 @@ export interface LoginResult {
   tempUserId?: string;
   email?: string;
   error?: string;
-  otpCode?: string;      // returned for dev ease
-  emailCode?: string;    // returned for dev ease
-  phoneCode?: string;    // returned for dev ease
 }
 
 export interface RegisterResult {
   success: boolean;
   email?: string;
   error?: string;
-  emailCode?: string; // returned for dev ease
-  phoneCode?: string; // returned for dev ease
 }
 
 interface AuthContextType {
   user: User | null;
   login: (emailOrPhone: string, password: string) => Promise<LoginResult>;
   verify2FA: (tempUserId: string, code: string) => Promise<boolean>;
+  resend2FACode: (tempUserId: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   register: (data: Omit<User, 'id'> & { password: string }) => Promise<RegisterResult>;
   verifyRegistration: (email: string, emailCode: string, phoneCode: string) => Promise<boolean>;
+  resendVerificationCode: (email: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   logout: () => void;
   updateUser: (data: Partial<User>) => Promise<boolean>;
   isAuthenticated: boolean;
@@ -137,9 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           success: false,
           verificationRequired: true,
           email: data.email,
-          error: data.message,
-          emailCode: data.emailCode,
-          phoneCode: data.phoneCode
+          error: data.message
         };
       }
 
@@ -148,8 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return {
             success: false,
             require2FA: true,
-            tempUserId: data.tempUserId,
-            otpCode: data.otpCode
+            tempUserId: data.tempUserId
           };
         }
 
@@ -208,6 +201,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const resend2FACode = async (tempUserId: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+      const res = await fetch('/api/auth/resend-2fa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tempUserId })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, error: data.error || 'Erro ao reenviar código 2FA' };
+      }
+    } catch (error) {
+      console.error('Erro de rede ao reenviar 2FA:', error);
+      return { success: false, error: 'Erro de conexão com o servidor.' };
+    }
+  };
+
   const register = async (data: Omit<User, 'id'> & { password: string }): Promise<RegisterResult> => {
     try {
       const res = await fetch('/api/auth/register', {
@@ -223,9 +238,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (res.ok || res.status === 201) {
         return {
           success: true,
-          email: data.email,
-          emailCode: responseData.emailCode,
-          phoneCode: responseData.phoneCode
+          email: data.email
         };
       } else {
         return {
@@ -272,6 +285,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const resendVerificationCode = async (email: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, error: data.error || 'Erro ao reenviar códigos' };
+      }
+    } catch (error) {
+      console.error('Erro de rede ao reenviar códigos:', error);
+      return { success: false, error: 'Erro de conexão com o servidor.' };
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
@@ -314,8 +349,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user, 
       login, 
       verify2FA, 
+      resend2FACode,
       register, 
       verifyRegistration, 
+      resendVerificationCode,
       logout, 
       updateUser, 
       isAuthenticated,

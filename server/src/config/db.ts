@@ -14,8 +14,7 @@ const defaultNews = [
     category: '🧠 TECNOLOGIA',
     image: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=800',
     readTime: '5 min',
-    date: '29 Jun 2026',
-    isPremium: false
+    date: '29 Jun 2026'
   },
   {
     title: 'burnout digital e produtividade: a carreira da Geração Z',
@@ -23,8 +22,7 @@ const defaultNews = [
     category: '💼 TRABALHO E FUTURO',
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800',
     readTime: '6 min',
-    date: '29 Jun 2026',
-    isPremium: false
+    date: '29 Jun 2026'
   },
   {
     title: 'O Retorno dos Vinis e a Busca pela Música Física na Era do Streaming',
@@ -32,8 +30,7 @@ const defaultNews = [
     category: '🎭 CULTURA',
     image: 'https://images.unsplash.com/photo-1487180144351-b8472da7a4c3?w=800',
     readTime: '4 min',
-    date: '28 Jun 2026',
-    isPremium: false
+    date: '28 Jun 2026'
   },
   {
     title: 'O que é Quiet Quitting? Entenda o movimento que desafia o mercado',
@@ -41,8 +38,7 @@ const defaultNews = [
     category: '💡 EXPLICAÇÕES',
     image: 'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?w=800',
     readTime: '5 min',
-    date: '28 Jun 2026',
-    isPremium: false
+    date: '28 Jun 2026'
   },
   {
     title: 'Ansiedade Digital: Como os feeds infinitos alteram o comportamento humano',
@@ -50,8 +46,7 @@ const defaultNews = [
     category: '🌍 SOCIEDADE',
     image: 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=800',
     readTime: '7 min',
-    date: '27 Jun 2026',
-    isPremium: true
+    date: '27 Jun 2026'
   },
   {
     title: 'O que você perdeu nesta segunda: As principais notícias do mundo explicadas',
@@ -59,8 +54,7 @@ const defaultNews = [
     category: '📰 NOTÍCIAS',
     image: 'https://images.unsplash.com/photo-1495020689067-958852a6565d?w=800',
     readTime: '3 min',
-    date: '29 Jun 2026',
-    isPremium: false
+    date: '29 Jun 2026'
   }
 ];
 
@@ -77,7 +71,6 @@ async function seedDatabase() {
         gender: 'Outro',
         password: 'Manifesto@Admin#2026!',
         role: 'admin',
-        isPremium: true,
         emailVerified: true,
         phoneVerified: true
       });

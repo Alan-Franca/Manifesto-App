@@ -42,7 +42,6 @@ export function Admin() {
   const [newsCategory, setNewsCategory] = useState('');
   const [newsReadTime, setNewsReadTime] = useState('5 min');
   const [newsDate, setNewsDate] = useState('');
-  const [newsIsPremium, setNewsIsPremium] = useState(false);
   const [newsImage, setNewsImage] = useState('');
 
   // Users State
@@ -118,7 +117,6 @@ export function Admin() {
     const options: any = { day: '2-digit', month: 'short', year: 'numeric' };
     const todayStr = new Date().toLocaleDateString('pt-BR', options).replace(/\. de/g, '').replace(/\./g, '');
     setNewsDate(todayStr);
-    setNewsIsPremium(false);
     setNewsImage('');
     setIsNewsDialogOpen(true);
   };
@@ -131,7 +129,6 @@ export function Admin() {
     setNewsCategory(item.category);
     setNewsReadTime(item.readTime || '5 min');
     setNewsDate(item.date);
-    setNewsIsPremium(!!item.isPremium);
     setNewsImage(item.image || '');
     setIsNewsDialogOpen(true);
   };
@@ -150,7 +147,6 @@ export function Admin() {
       category: newsCategory,
       readTime: newsReadTime,
       date: newsDate,
-      isPremium: newsIsPremium,
       image: newsImage
     };
 
@@ -205,7 +201,7 @@ export function Admin() {
     }
   };
 
-  // Update User Role/Premium Status
+  // Update User Role Status
   const handleUpdateUser = async (id: string, updates: any) => {
     const token = localStorage.getItem('manifesto_token');
     try {
@@ -265,7 +261,7 @@ export function Admin() {
             <h1 className="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
               <AnimatedIcon icon="admin" size={32} /> Painel do Administrador
             </h1>
-            <p className="text-muted-foreground mt-1">Gerencie os usuários e notícias do Jornal Manifesto</p>
+            <p className="text-muted-foreground mt-1">Gerencie os leitores e notícias do Jornal Manifesto</p>
           </div>
         </div>
 
@@ -305,14 +301,13 @@ export function Admin() {
                       <TableHead>Categoria</TableHead>
                       <TableHead>Data</TableHead>
                       <TableHead>Leitura</TableHead>
-                      <TableHead>Premium?</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {news.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
+                        <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
                           Nenhuma notícia cadastrada.
                         </TableCell>
                       </TableRow>
@@ -332,17 +327,6 @@ export function Admin() {
                           <TableCell className="font-semibold text-xs uppercase tracking-wider">{item.category.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</TableCell>
                           <TableCell>{item.date}</TableCell>
                           <TableCell>{item.readTime}</TableCell>
-                          <TableCell>
-                            {item.isPremium ? (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-500/20 text-yellow-700 dark:text-yellow-400">
-                                Sim
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary text-muted-foreground">
-                                Não
-                              </span>
-                            )}
-                          </TableCell>
                           <TableCell className="text-right space-x-2">
                             <Button onClick={() => handleEditNewsClick(item)} variant="outline" size="icon" className="h-8 w-8 text-primary hover:bg-secondary">
                               <AnimatedIcon icon="edit" size={16} />
@@ -364,7 +348,7 @@ export function Admin() {
           <TabsContent value="users" className="space-y-4">
             <div className="bg-card p-4 rounded-lg border border-border">
               <h3 className="font-semibold text-lg text-foreground">Usuários Cadastrados: {users.length}</h3>
-              <p className="text-sm text-muted-foreground">Gerencie acessos, assinaturas e permissões</p>
+              <p className="text-sm text-muted-foreground">Gerencie permissões e contas do portal</p>
             </div>
 
             {usersLoading ? (
@@ -380,7 +364,6 @@ export function Admin() {
                       <TableHead>Nome</TableHead>
                       <TableHead>E-mail</TableHead>
                       <TableHead>Telefone</TableHead>
-                      <TableHead>Premium</TableHead>
                       <TableHead>Papel (Role)</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -400,25 +383,6 @@ export function Admin() {
                         <TableCell className="font-medium">{u.name}</TableCell>
                         <TableCell>{u.email}</TableCell>
                         <TableCell>{u.phone}</TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={() => handleUpdateUser(u._id, { isPremium: !u.isPremium })}
-                            variant="ghost"
-                            size="sm"
-                            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold ${
-                              u.isPremium
-                                ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20'
-                                : 'bg-muted text-muted-foreground hover:bg-secondary'
-                            }`}
-                          >
-                            <AnimatedIcon 
-                              icon="crown" 
-                              size={14} 
-                              colors={u.isPremium ? 'primary:#ca8a04,secondary:#facc15' : 'primary:#475569,secondary:#475569'} 
-                            />
-                            {u.isPremium ? 'Premium' : 'Padrão'}
-                          </Button>
-                        </TableCell>
                         <TableCell>
                           <Button
                             onClick={() => handleUpdateUser(u._id, { role: u.role === 'admin' ? 'user' : 'admin' })}
@@ -522,30 +486,15 @@ export function Admin() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 items-center pt-2">
-              <div className="space-y-2">
-                <Label htmlFor="news-date">Data da Publicação *</Label>
-                <Input
-                  id="news-date"
-                  value={newsDate}
-                  onChange={(e) => setNewsDate(e.target.value)}
-                  placeholder="Ex: 29 Jun 2026"
-                  required
-                />
-              </div>
-
-              <div className="flex items-center gap-2 mt-6">
-                <input
-                  type="checkbox"
-                  id="news-premium"
-                  checked={newsIsPremium}
-                  onChange={(e) => setNewsIsPremium(e.target.checked)}
-                  className="rounded border-border text-primary focus:ring-primary w-4 h-4 cursor-pointer"
-                />
-                <Label htmlFor="news-premium" className="cursor-pointer font-medium text-sm">
-                  Matéria Exclusiva Premium?
-                </Label>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="news-date">Data da Publicação *</Label>
+              <Input
+                id="news-date"
+                value={newsDate}
+                onChange={(e) => setNewsDate(e.target.value)}
+                placeholder="Ex: 29 Jun 2026"
+                required
+              />
             </div>
 
             <div className="space-y-2">

@@ -8,14 +8,11 @@ interface NewsCardProps {
   image?: string;
   readTime: string;
   date: string;
-  isPremium?: boolean;
 }
 
-export function NewsCard({ title, summary, category, image, readTime, date, isPremium }: NewsCardProps) {
+export function NewsCard({ title, summary, category, image, readTime, date }: NewsCardProps) {
   return (
-    <article className={`bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full ${
-      isPremium ? 'border-t-4 border-t-amber-500' : 'border-t-4 border-t-primary'
-    }`}>
+    <article className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full border-t-4 border-t-primary">
       {image && (
         <div className="w-full h-48 bg-muted overflow-hidden relative group">
           <img 
@@ -23,12 +20,6 @@ export function NewsCard({ title, summary, category, image, readTime, date, isPr
             alt={title} 
             className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105" 
           />
-          {isPremium && (
-            <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded flex items-center gap-1 shadow-md">
-              <AnimatedIcon icon="sparkles" size={12} colors="primary:#ffffff,secondary:#ffffff" />
-              Premium
-            </div>
-          )}
         </div>
       )}
 
