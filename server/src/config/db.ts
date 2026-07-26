@@ -117,6 +117,7 @@ export async function connectDB() {
     await mongoose.connect(MONGODB_URI);
     isConnected = true;
     console.log('=== MongoDB conectado com sucesso ===');
+    await News.syncIndexes();
     await seedDatabase();
   } catch (error) {
     console.error('Erro de conexão com o MongoDB:', error);

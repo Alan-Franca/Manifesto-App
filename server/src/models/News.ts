@@ -35,4 +35,6 @@ const NewsSchema = new Schema(
   }
 );
 
+NewsSchema.index({ createdAt: -1 });
+
 export const News = model('News', NewsSchema);
