@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { News } from '../models/News.js';
 import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth.js';
+import { parseNewsDate } from '../utils/dateParser.js';
 
 const router = Router();
 
@@ -8,6 +9,19 @@ const router = Router();
 router.get('/', async (_req: any, res: any) => {
   try {
     const news = await News.find().sort({ createdAt: -1 });
+
+    // Sort by publication date (newest first), falling back to createdAt
+    news.sort((a: any, b: any) => {
+      const timeA = parseNewsDate(a.date);
+      const timeB = parseNewsDate(b.date);
+      if (timeB !== timeA) {
+        return timeB - timeA; // Newest date first
+      }
+      const createdA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const createdB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return createdB - createdA;
+    });
+
     return res.json(news);
   } catch (error) {
     console.error('Erro ao buscar notícias:', error);
