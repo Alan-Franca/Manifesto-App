@@ -5,8 +5,10 @@ import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../../imports/newLogo.png';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function Login() {
+  const { t } = useLanguage();
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -133,8 +135,8 @@ export function Login() {
             </>
           ) : (
             <>
-              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Bem-vindo de volta</h1>
-              <p className="text-muted-foreground text-sm">Entre para continuar lendo o Jornal Manifesto</p>
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">{t('login.title')}</h1>
+              <p className="text-muted-foreground text-sm">{t('login.subtitle')}</p>
             </>
           )}
         </div>
@@ -262,10 +264,10 @@ export function Login() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Email ou Telefone</Label>
+              <Label>{t('login.email_or_phone')}</Label>
               <Input
                 type="text"
-                placeholder="seu@email.com ou (00) 00000-0000"
+                placeholder="seu@email.com"
                 value={emailOrPhone}
                 onChange={(e) => setEmailOrPhone(e.target.value)}
                 required
@@ -273,7 +275,7 @@ export function Login() {
             </div>
 
             <div className="space-y-2">
-              <Label>Senha</Label>
+              <Label>{t('login.password')}</Label>
               <Input
                 type="password"
                 placeholder="••••••••"
@@ -288,17 +290,17 @@ export function Login() {
             )}
 
             <Button type="submit" className="w-full font-semibold" size="lg" disabled={isLoading}>
-              {isLoading ? 'Entrando...' : 'Entrar'}
+              {isLoading ? t('login.loading') : t('login.enter')}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Não tem uma conta?{' '}
+              {t('login.no_account')}{' '}
               <button
                 type="button"
                 onClick={() => navigate('/register')}
-                className="text-primary hover:underline font-semibold"
+                className="text-primary hover:underline font-semibold ml-1"
               >
-                Cadastre-se
+                {t('login.register_link')}
               </button>
             </p>
           </form>

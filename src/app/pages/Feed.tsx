@@ -9,28 +9,30 @@ import { InstagramBanner } from '../components/InstagramBanner';
 import { PodcastSection } from '../components/PodcastSection';
 import { ScrapbookSticker } from '../components/ScrapbookSticker';
 import { AnimatedIcon } from '../components/AnimatedIcon';
+import { useLanguage } from '../contexts/LanguageContext';
 
-const weeklySegments = [
-  { day: 1, label: 'Segunda', emoji: '📰', title: 'Você perdeu', description: 'mas a Manifesto te conta' },
-  { day: 2, label: 'Terça', emoji: '🤔', title: 'Você Sabia?', description: 'Conceitos e curiosidades explicadas' },
-  { day: 3, label: 'Quarta', emoji: '✨', title: 'Destaque Semanal', description: 'Grandes inovações digitais em foco' },
-  { day: 4, label: 'Quinta', emoji: '📖', title: 'Cultura Explicada', description: 'Tendências, música, moda e séries' },
-  { day: 5, label: 'Sexta', emoji: '🎬', title: 'Manifesto Recomenda', description: 'Críticas e indicações da equipe' },
+const weeklySegmentsBase = [
+  { day: 1, emoji: '📰' },
+  { day: 2, emoji: '🤔' },
+  { day: 3, emoji: '✨' },
+  { day: 4, emoji: '📖' },
+  { day: 5, emoji: '🎬' },
 ];
 
 const categoryList = [
-  { id: 'para-voce', label: '📍 Para Você' },
-  { id: 'tudo', label: '🌐 Tudo' },
-  { id: '🧠 TECNOLOGIA', label: '🧠 Tecnologia' },
-  { id: '💼 TRABALHO E FUTURO', label: '💼 Trabalho e Futuro' },
-  { id: '🎭 CULTURA', label: '🎭 Cultura' },
-  { id: '💡 EXPLICAÇÕES', label: '💡 Explicações' },
-  { id: '🌍 SOCIEDADE', label: '🌍 Sociedade' },
-  { id: '📰 NOTÍCIAS', label: '📰 Notícias' },
+  { id: 'para-voce' },
+  { id: 'tudo' },
+  { id: '🧠 TECNOLOGIA' },
+  { id: '💼 TRABALHO E FUTURO' },
+  { id: '🎭 CULTURA' },
+  { id: '💡 EXPLICAÇÕES' },
+  { id: '🌍 SOCIEDADE' },
+  { id: '📰 NOTÍCIAS' },
 ];
 
 export function Feed() {
   const { user } = useAuth();
+  const { t, translateCategory, translateWeeklySegment } = useLanguage();
   const [newsList, setNewsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -56,11 +58,11 @@ export function Feed() {
           const data = await res.json();
           setNewsList(data);
         } else {
-          setError('Não foi possível carregar as notícias.');
+          setError(t('feed.error_loading'));
         }
       } catch (err) {
         console.error('Erro de rede ao buscar notícias:', err);
-        setError('Erro de conexão ao buscar notícias.');
+        setError(t('feed.error_loading'));
       } finally {
         setLoading(false);
       }
@@ -107,7 +109,6 @@ export function Feed() {
   const featuredNews = filteredNews[0];
   const gridNews = filteredNews.slice(1);
 
-
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
       <Header />
@@ -117,16 +118,16 @@ export function Feed() {
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border/60 pb-6">
           <div>
             <h1 className="text-3xl font-display font-bold tracking-tight text-primary mb-1">
-              Olá, {user?.name?.split(' ')[0]}
+              {t('feed.hello')}, {user?.name?.split(' ')[0]}
             </h1>
             <p className="text-muted-foreground text-sm font-sans">
-              As análises e explicações mais profundas selecionadas para você.
+              {t('feed.subtitle')}
             </p>
           </div>
           <div className="flex gap-2">
             {user?.role === 'admin' && (
               <Button onClick={() => window.location.href = '/admin'} variant="outline" className="border-primary text-primary hover:bg-primary/5 font-semibold text-xs py-1">
-                Painel Admin
+                {t('header.admin_tooltip')}
               </Button>
             )}
           </div>
@@ -142,18 +143,19 @@ export function Feed() {
         <section className="mb-10 bg-card/40 rounded-2xl p-5 border border-border/80 shadow-sm backdrop-blur-sm">
           <h2 className="text-lg font-display font-bold text-primary mb-4 flex items-center gap-2">
             <AnimatedIcon icon="calendar" size={20} colors="primary:#540B0E,secondary:#540B0E" />
-            Manifesto Semanal
+            {t('feed.weekly_title')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {weeklySegments.map((seg) => {
-              const isToday = seg.day === currentWeekday;
-              const isActive = activeSegment === seg.day;
+            {weeklySegmentsBase.map((segBase) => {
+              const segInfo = translateWeeklySegment(segBase.day);
+              const isToday = segBase.day === currentWeekday;
+              const isActive = activeSegment === segBase.day;
 
               return (
                 <div
-                  key={seg.day}
+                  key={segBase.day}
                   onClick={() => {
-                    setActiveSegment(seg.day);
+                    setActiveSegment(segBase.day);
                     setActiveCategory('');
                   }}
                   className={`p-4 rounded-xl border-2 text-left cursor-pointer transition-all duration-200 select-none flex flex-col justify-between ${
@@ -167,21 +169,21 @@ export function Feed() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-bold font-sans uppercase tracking-widest text-muted-foreground">
-                        {seg.label}
+                        {segInfo.label}
                       </span>
                       {isToday && (
                         <span className="text-[10px] font-bold bg-primary text-primary-foreground px-2 py-0.5 rounded">
-                          HOJE
+                          {t('feed.today')}
                         </span>
                       )}
                     </div>
                     <div className="font-display text-base font-bold text-foreground leading-snug flex items-center gap-1.5 mb-1">
-                      <span>{seg.emoji}</span>
-                      <span>{seg.title}</span>
+                      <span>{segBase.emoji}</span>
+                      <span>{segInfo.title}</span>
                     </div>
                   </div>
                   <p className="text-[11px] text-muted-foreground font-sans mt-2 leading-relaxed">
-                    {seg.description}
+                    {segInfo.description}
                   </p>
                 </div>
               );
@@ -194,7 +196,7 @@ export function Feed() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-display font-bold text-primary flex items-center gap-2">
               <AnimatedIcon icon="filter" size={18} colors="primary:#540B0E,secondary:#540B0E" />
-              Editorias
+              {t('feed.editorials')}
             </h2>
             {(activeCategory || activeSegment) && (
               <button 
@@ -204,7 +206,7 @@ export function Feed() {
                 }}
                 className="text-xs text-accent hover:underline font-bold"
               >
-                Limpar Filtros
+                {t('feed.clear_filters')}
               </button>
             )}
           </div>
@@ -215,6 +217,11 @@ export function Feed() {
                 return null; // Don't show "Para Você" if user hasn't selected interests
               }
               const isActive = activeCategory === cat.id && activeSegment === null;
+              const displayLabel = cat.id === 'para-voce'
+                ? t('feed.cat_for_you')
+                : cat.id === 'tudo'
+                ? t('feed.cat_all')
+                : translateCategory(cat.id);
 
               return (
                 <button
@@ -232,9 +239,7 @@ export function Feed() {
                   {cat.id !== 'para-voce' && cat.id !== 'tudo' && (
                     <ScrapbookSticker category={cat.id} size="sm" hasTape={false} />
                   )}
-                  {cat.id === 'para-voce' && <span className="text-sm">📍</span>}
-                  {cat.id === 'tudo' && <span className="text-sm">🌐</span>}
-                  <span>{cat.label.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</span>
+                  <span>{displayLabel}</span>
                 </button>
               );
             })}
@@ -245,7 +250,7 @@ export function Feed() {
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-muted-foreground text-sm font-sans font-medium">Carregando notícias...</p>
+            <p className="text-muted-foreground text-sm font-sans font-medium">{t('feed.loading_news')}</p>
           </div>
         )}
 
@@ -253,7 +258,7 @@ export function Feed() {
           <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-xl max-w-xl mx-auto">
             <p className="text-destructive font-bold mb-3">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline" className="border-destructive text-destructive hover:bg-destructive hover:text-white">
-              Tentar Novamente
+              {t('feed.retry')}
             </Button>
           </div>
         )}
@@ -263,8 +268,8 @@ export function Feed() {
           <>
             {filteredNews.length === 0 ? (
               <div className="text-center py-20 bg-muted/20 border border-dashed border-border rounded-xl">
-                <p className="text-muted-foreground mb-2 font-medium">Nenhuma notícia encontrada.</p>
-                <p className="text-xs text-muted-foreground">Experimente alterar os filtros ou cadastrar novos interesses no perfil.</p>
+                <p className="text-muted-foreground mb-2 font-medium">{t('feed.no_news')}</p>
+                <p className="text-xs text-muted-foreground">{t('feed.no_news_sub')}</p>
               </div>
             ) : (
               <div className="space-y-10">
@@ -290,7 +295,7 @@ export function Feed() {
                         <div className="flex items-center justify-between gap-2 mb-3">
                           <span className="text-xs font-bold font-sans uppercase tracking-widest text-accent flex items-center gap-1.5 select-none">
                             <AnimatedIcon icon="tag" size={14} colors="primary:#540B0E,secondary:#540B0E" />
-                            {featuredNews.category.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}
+                            {translateCategory(featuredNews.category)}
                           </span>
                           <ScrapbookSticker category={featuredNews.category} size="sm" hasTape={false} />
                         </div>

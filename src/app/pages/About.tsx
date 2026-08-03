@@ -4,9 +4,11 @@ import { Footer } from '../components/Footer';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedIcon } from '../components/AnimatedIcon';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function About() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -22,7 +24,7 @@ export function About() {
             className="flex items-center gap-2 hover:bg-secondary text-muted-foreground hover:text-primary transition-colors border border-border"
           >
             <AnimatedIcon icon="arrowLeft" size={16} />
-            <span>Voltar para o Feed</span>
+            <span>{t('about.back_feed')}</span>
           </Button>
         </div>
 

@@ -1,6 +1,8 @@
 import { ArrowUpRight, Instagram, Sparkles, Users, MessageSquareHeart } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function InstagramBanner() {
+  const { t } = useLanguage();
   const instagramUrl = 'https://instagram.com/manifesto_espro';
 
   return (
@@ -33,16 +35,16 @@ export function InstagramBanner() {
 
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Comunidade Ativa
+              {t('insta.community')}
             </span>
           </div>
 
           <div>
             <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground tracking-tight leading-snug">
-              Conecte-se com o <span className="bg-gradient-to-r from-[#fd5949] via-[#d6249f] to-[#285AEB] bg-clip-text text-transparent">Jornal Manifesto</span> no Instagram
+              {t('insta.headline_start')}<span className="bg-gradient-to-r from-[#fd5949] via-[#d6249f] to-[#285AEB] bg-clip-text text-transparent">Jornal Manifesto</span>{t('insta.headline_end')}
             </h2>
             <p className="text-muted-foreground text-sm font-sans mt-2 max-w-2xl leading-relaxed">
-              Receba pautas diárias, bastidores das reportagens, conteúdos em vídeo, carrosséis explicativos e participe das nossas enquetes exclusivas em primeira mão.
+              {t('insta.subtext')}
             </p>
           </div>
 
@@ -50,15 +52,15 @@ export function InstagramBanner() {
           <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground pt-1">
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>Carrosséis Explicativos</span>
+              <span>{t('insta.badge_carousels')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Users className="w-4 h-4 text-indigo-500" />
-              <span>Debates Jovens</span>
+              <span>{t('insta.badge_debates')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <MessageSquareHeart className="w-4 h-4 text-rose-500" />
-              <span>Interação Direta</span>
+              <span>{t('insta.badge_interaction')}</span>
             </div>
           </div>
         </div>
@@ -76,12 +78,12 @@ export function InstagramBanner() {
           >
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <Instagram className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
-            <span>Siga no Instagram</span>
+            <span>{t('insta.cta_button')}</span>
             <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
 
           <p className="text-[11px] text-muted-foreground font-sans text-center">
-            @manifesto_espro • Conteúdo diário e transformador
+            {t('insta.footnote')}
           </p>
         </div>
 

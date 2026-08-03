@@ -6,8 +6,10 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../../imports/newLogo.png';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function Register() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -120,8 +122,8 @@ export function Register() {
             </>
           ) : (
             <>
-              <h1 className="text-3xl mb-2 font-display font-bold text-primary">Criar conta</h1>
-              <p className="text-muted-foreground text-sm">Cadastre-se para começar a ler o Jornal Manifesto gratuitamente</p>
+              <h1 className="text-3xl mb-2 font-display font-bold text-primary">{t('register.title')}</h1>
+              <p className="text-muted-foreground text-sm">{t('register.subtitle')}</p>
             </>
           )}
         </div>
@@ -198,7 +200,7 @@ export function Register() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Nome</Label>
+              <Label>{t('register.name')}</Label>
               <Input
                 type="text"
                 name="name"
@@ -210,7 +212,7 @@ export function Register() {
             </div>
 
             <div className="space-y-2">
-              <Label>Email (Domínios temporários serão bloqueados)</Label>
+              <Label>{t('register.email')}</Label>
               <Input
                 type="email"
                 name="email"
@@ -222,7 +224,7 @@ export function Register() {
             </div>
 
             <div className="space-y-2">
-              <Label>Telefone (DDD + Número)</Label>
+              <Label>{t('register.phone')}</Label>
               <Input
                 type="tel"
                 name="phone"
@@ -249,7 +251,7 @@ export function Register() {
             </div>
 
             <div className="space-y-2">
-              <Label>Senha</Label>
+              <Label>{t('login.password')}</Label>
               <Input
                 type="password"
                 name="password"
@@ -277,17 +279,17 @@ export function Register() {
             )}
 
             <Button type="submit" className="w-full font-semibold" size="lg" disabled={isLoading}>
-              {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+              {isLoading ? 'Cadastrando...' : t('register.create')}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Já tem uma conta?{' '}
+              {t('register.has_account')}{' '}
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="text-primary hover:underline font-semibold"
+                className="text-primary hover:underline font-semibold ml-1"
               >
-                Entrar
+                {t('register.login_link')}
               </button>
             </p>
           </form>

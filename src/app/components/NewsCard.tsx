@@ -1,5 +1,6 @@
 import { ScrapbookSticker } from './ScrapbookSticker';
 import { AnimatedIcon } from './AnimatedIcon';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface NewsCardProps {
   title: string;
@@ -11,6 +12,8 @@ interface NewsCardProps {
 }
 
 export function NewsCard({ title, summary, category, image, readTime, date }: NewsCardProps) {
+  const { translateCategory } = useLanguage();
+
   return (
     <article className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full border-t-4 border-t-primary">
       {image && (
@@ -27,7 +30,7 @@ export function NewsCard({ title, summary, category, image, readTime, date }: Ne
         <div className="flex items-center justify-between gap-2 mb-3">
           <span className="text-xs font-bold font-sans uppercase tracking-widest text-accent flex items-center gap-1.5 select-none">
             <AnimatedIcon icon="tag" size={14} colors="primary:#540B0E,secondary:#540B0E" />
-            {category.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}
+            {translateCategory(category)}
           </span>
           <ScrapbookSticker category={category} size="sm" hasTape={false} />
         </div>

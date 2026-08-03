@@ -14,9 +14,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 import { AnimatedIcon } from '../components/AnimatedIcon';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function Admin() {
   const { user } = useAuth();
+  const { t, translateCategory } = useLanguage();
   const navigate = useNavigate();
 
   // Redirect if not admin
@@ -324,7 +326,7 @@ export function Admin() {
                             )}
                           </TableCell>
                           <TableCell className="font-medium max-w-[300px] truncate">{item.title}</TableCell>
-                          <TableCell className="font-semibold text-xs uppercase tracking-wider">{item.category.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</TableCell>
+                          <TableCell className="font-semibold text-xs uppercase tracking-wider">{translateCategory(item.category)}</TableCell>
                           <TableCell>{item.date}</TableCell>
                           <TableCell>{item.readTime}</TableCell>
                           <TableCell className="text-right space-x-2">

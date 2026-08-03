@@ -4,10 +4,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedIcon } from './AnimatedIcon';
 import logo from '../../imports/newLogo.png';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function Header() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -24,7 +26,7 @@ export function Header() {
               <AnimatedIcon icon="search" size={20} />
               <input
                 type="text"
-                placeholder="Buscar notícias..."
+                placeholder={t('header.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 bg-transparent border-none outline-none text-foreground"
@@ -40,7 +42,7 @@ export function Header() {
               className="w-full flex items-center gap-2 bg-input-background rounded-lg px-4 py-2 text-muted-foreground hover:bg-secondary transition-colors border border-input"
             >
               <AnimatedIcon icon="search" size={20} />
-              <span>Buscar...</span>
+              <span>{t('header.search')}</span>
             </button>
           )}
         </div>
@@ -49,7 +51,7 @@ export function Header() {
           {user?.role === 'admin' && (
             <button
               onClick={() => navigate('/admin')}
-              title="Painel Admin"
+              title={t('header.admin_tooltip')}
               className="flex-shrink-0 w-10 h-10 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground flex items-center justify-center text-primary transition-colors border border-border group"
             >
               <AnimatedIcon icon="admin" size={20} colors="primary:#003049,secondary:#540B0E" />

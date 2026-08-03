@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { PreferencesSetup } from './pages/PreferencesSetup';
@@ -93,9 +94,11 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <div className="min-h-screen">
-            <AppRoutes />
-          </div>
+          <LanguageProvider>
+            <div className="min-h-screen">
+              <AppRoutes />
+            </div>
+          </LanguageProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

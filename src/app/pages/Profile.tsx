@@ -11,13 +11,17 @@ import { useNavigate } from 'react-router-dom';
 import { ScrapbookSticker } from '../components/ScrapbookSticker';
 import { AnimatedIcon } from '../components/AnimatedIcon';
 
+import { useLanguage, Language } from '../contexts/LanguageContext';
+
 export function Profile() {
   const { user, updateUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage, t, translateCategory } = useLanguage();
   const navigate = useNavigate();
 
-  const handleLanguageChange = (language: string) => {
-    updateUser({ language });
+  const handleLanguageChange = (newLang: string) => {
+    setLanguage(newLang as Language);
+    updateUser({ language: newLang });
   };
 
   const handle2FAToggle = () => {
@@ -45,7 +49,7 @@ export function Profile() {
       <Header />
 
       <main className="flex-1 pt-28 pb-20 md:pb-8 px-4 max-w-2xl mx-auto w-full">
-        <h1 className="text-3xl mb-8">Meu Perfil</h1>
+        <h1 className="text-3xl mb-8 font-display font-bold">{t('profile.title')}</h1>
 
         {/* Profile Picture */}
         <div className="bg-card rounded-lg p-6 mb-6 border border-border shadow-sm">
@@ -74,7 +78,7 @@ export function Profile() {
               <h2 className="text-xl font-bold font-display mb-1">{user?.name}</h2>
               <p className="text-muted-foreground text-sm">{user?.email}</p>
               <p className="text-xs text-primary font-medium mt-2 flex items-center gap-1">
-                ✓ Conta Gratuita Manifesto
+                {t('profile.free_account')}
               </p>
             </div>
           </div>
@@ -85,13 +89,13 @@ export function Profile() {
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-6 mb-6">
             <div className="flex items-center gap-3 mb-2">
               <AnimatedIcon icon="admin" size={24} colors="primary:#003049,secondary:#540B0E" />
-              <h3 className="text-xl">Ações de Administrador</h3>
+              <h3 className="text-xl font-bold font-display">{t('profile.admin_title')}</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Acesse o painel para gerenciar notícias e usuários do Jornal Manifesto.
+              {t('profile.admin_desc')}
             </p>
             <Button variant="default" onClick={() => navigate('/admin')}>
-              Acessar Painel Admin
+              {t('profile.admin_button')}
             </Button>
           </div>
         )}
@@ -104,20 +108,20 @@ export function Profile() {
               <div className="flex items-center gap-3">
                 <AnimatedIcon icon="globe" size={20} />
                 <div>
-                  <p>Idioma</p>
+                  <p className="font-semibold">{t('profile.language')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {user?.language === 'en-US' ? 'English (US)' : user?.language === 'es-ES' ? 'Español' : 'Português (Brasil)'}
+                    {language === 'en-US' ? t('profile.language_en') : language === 'es-ES' ? t('profile.language_es') : t('profile.language_pt')}
                   </p>
                 </div>
               </div>
-              <Select value={user?.language || 'pt-BR'} onValueChange={handleLanguageChange}>
-                <SelectTrigger className="w-40">
+              <Select value={language} onValueChange={handleLanguageChange}>
+                <SelectTrigger className="w-44">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                  <SelectItem value="en-US">English (US)</SelectItem>
-                  <SelectItem value="es-ES">Español</SelectItem>
+                  <SelectItem value="pt-BR">{t('profile.language_pt')}</SelectItem>
+                  <SelectItem value="en-US">{t('profile.language_en')}</SelectItem>
+                  <SelectItem value="es-ES">{t('profile.language_es')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -129,9 +133,9 @@ export function Profile() {
               <div className="flex items-center gap-3">
                 <AnimatedIcon icon="admin" size={20} />
                 <div>
-                  <p>Autenticação de Dois Fatores</p>
+                  <p className="font-semibold">{t('profile.2fa')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {user?.twoFactorEnabled ? 'Ativado' : 'Desativado'}
+                    {user?.twoFactorEnabled ? t('profile.2fa_enabled') : t('profile.2fa_disabled')}
                   </p>
                 </div>
               </div>
@@ -149,9 +153,9 @@ export function Profile() {
                   <AnimatedIcon icon="moon" size={20} />
                 )}
                 <div>
-                  <p>Tema</p>
+                  <p className="font-semibold">{t('profile.theme')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {theme === 'light' ? 'Claro' : 'Escuro'}
+                    {theme === 'light' ? t('profile.theme_light') : t('profile.theme_dark')}
                   </p>
                 </div>
               </div>
@@ -162,9 +166,9 @@ export function Profile() {
 
         {/* Preferences */}
         <div className="bg-card rounded-xl p-6 mb-6 border border-border shadow-sm border-t-4 border-t-accent">
-          <h3 className="mb-4 font-display text-lg font-bold text-primary">Interesses Salvos</h3>
+          <h3 className="mb-4 font-display text-lg font-bold text-primary">{t('profile.saved_interests')}</h3>
           {(!user?.preferences || user.preferences.length === 0) ? (
-            <p className="text-sm text-muted-foreground mb-4">Você ainda não escolheu suas editorias preferidas.</p>
+            <p className="text-sm text-muted-foreground mb-4">{t('profile.no_interests')}</p>
           ) : (
             <div className="flex flex-wrap gap-3">
               {user.preferences.map((pref) => (
@@ -173,7 +177,7 @@ export function Profile() {
                   className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/20 rounded-xl text-xs font-bold uppercase tracking-wider font-sans select-none shadow-sm"
                 >
                   <ScrapbookSticker category={pref} size="sm" hasTape={false} />
-                  <span>{pref.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</span>
+                  <span>{translateCategory(pref)}</span>
                 </div>
               ))}
             </div>
@@ -182,7 +186,7 @@ export function Profile() {
             onClick={() => navigate('/preferences')}
             className="mt-5 text-primary hover:text-accent font-bold text-xs uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
           >
-            Editar interesses
+            {t('profile.edit_interests')}
           </button>
         </div>
 
@@ -193,7 +197,7 @@ export function Profile() {
           className="w-full border border-destructive text-destructive hover:bg-destructive/10"
         >
           <AnimatedIcon icon="logout" size={18} colors="primary:#ef4444,secondary:#ef4444" className="mr-2" />
-          Sair
+          {t('profile.logout')}
         </Button>
       </main>
 

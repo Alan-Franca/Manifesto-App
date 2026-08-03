@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Play, Youtube, Mic, Clock, ExternalLink, Radio, Sparkles } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface Episode {
   id: string;
@@ -56,6 +57,7 @@ const PODCAST_EPISODES: Episode[] = [
 ];
 
 export function PodcastSection() {
+  const { t } = useLanguage();
   const [selectedEpisode, setSelectedEpisode] = useState<Episode>(PODCAST_EPISODES[0]);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -78,15 +80,15 @@ export function PodcastSection() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl md:text-2xl font-display font-bold text-foreground tracking-tight">
-                Podcast <span className="text-primary">Manifesto</span>
+                {t('podcast.title_start')}<span className="text-primary">{t('podcast.title_end')}</span>
               </h2>
               <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider bg-red-500/10 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-md border border-red-500/20">
                 <Radio className="w-3 h-3 animate-pulse text-red-500" />
-                No YouTube
+                {t('podcast.youtube_badge')}
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-sans mt-0.5">
-              Assista ou ouça nossos episódios direto pelo site
+              {t('podcast.subtitle')}
             </p>
           </div>
         </div>
@@ -98,7 +100,7 @@ export function PodcastSection() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs transition-all cursor-pointer shadow-sm self-start sm:self-auto"
         >
           <Youtube className="w-4 h-4" />
-          <span>Canal no YouTube</span>
+          <span>{t('podcast.youtube_button')}</span>
           <ExternalLink className="w-3.5 h-3.5 opacity-80" />
         </a>
       </div>
@@ -126,7 +128,7 @@ export function PodcastSection() {
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span className="font-bold text-primary flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-accent" />
-                Episódio #{selectedEpisode.episodeNumber}
+                {t('podcast.episode')} #{selectedEpisode.episodeNumber}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
@@ -159,9 +161,9 @@ export function PodcastSection() {
         {/* Right Col (Playlist / Episodes Picker): 5 cols */}
         <div className="lg:col-span-5 flex flex-col space-y-3">
           <h3 className="text-sm font-bold text-foreground font-display uppercase tracking-wider flex items-center justify-between">
-            <span>Todos os Episódios</span>
+            <span>{t('podcast.all_episodes')}</span>
             <span className="text-xs text-muted-foreground font-sans font-normal">
-              {PODCAST_EPISODES.length} disponíveis
+              {PODCAST_EPISODES.length} {t('podcast.available')}
             </span>
           </h3>
 
