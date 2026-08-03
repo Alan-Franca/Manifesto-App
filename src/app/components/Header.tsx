@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FcManager } from 'react-icons/fc';
+import { User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedIcon } from './AnimatedIcon';
@@ -67,7 +67,7 @@ export function Header() {
             {user?.profileImage ? (
               <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
             ) : (
-              <FcManager className="w-6 h-6" />
+              <User className="w-5 h-5 text-muted-foreground" />
             )}
           </button>
         </div>

@@ -1,74 +1,76 @@
 import {
-  FcHome,
-  FcManager,
-  FcPrivacy,
-  FcSearch,
-  FcCancel,
-  FcEmptyTrash,
-  FcDocument,
-  FcPlus,
-  FcCalendar,
-  FcReading,
-  FcIcons8Cup,
-  FcFlashOn,
-  FcClock,
-  FcBookmark,
-  FcCamera,
-  FcGlobe,
-  FcNightLandscape,
-  FcIdea,
-  FcLeave,
-  FcVip,
-  FcNews,
-  FcConferenceCall,
-  FcEmptyFilter,
-  FcLeft,
-  FcBinoculars,
-  FcQuestions,
-  FcClapperboard,
-  FcBriefcase,
-  FcMindMap
-} from 'react-icons/fc';
+  Home,
+  User,
+  ShieldCheck,
+  Search,
+  X,
+  Trash2,
+  SquarePen,
+  Plus,
+  Calendar,
+  BookOpen,
+  Trophy,
+  Sparkles,
+  Clock,
+  Tag,
+  Camera,
+  Globe,
+  Moon,
+  Sun,
+  LogOut,
+  Crown,
+  Newspaper,
+  Users,
+  Filter,
+  ArrowLeft,
+  Compass,
+  HelpCircle,
+  Film,
+  Briefcase,
+  Brain,
+  Lightbulb,
+  LucideProps
+} from 'lucide-react';
 
 const iconMap = {
-  home: FcHome,
-  user: FcManager,
-  admin: FcPrivacy,
-  search: FcSearch,
-  close: FcCancel,
-  trash: FcEmptyTrash,
-  edit: FcDocument,
-  plus: FcPlus,
-  calendar: FcCalendar,
-  book: FcReading,
-  award: FcIcons8Cup,
-  sparkles: FcFlashOn,
-  clock: FcClock,
-  tag: FcBookmark,
-  camera: FcCamera,
-  globe: FcGlobe,
-  moon: FcNightLandscape,
-  sun: FcIdea,
-  logout: FcLeave,
-  crown: FcVip,
-  newspaper: FcNews,
-  users: FcConferenceCall,
-  filter: FcEmptyFilter,
-  arrowLeft: FcLeft,
-  compass: FcBinoculars,
-  help: FcQuestions,
-  theater: FcClapperboard,
-  briefcase: FcBriefcase,
-  brain: FcMindMap,
-  lightbulb: FcIdea,
+  home: Home,
+  user: User,
+  admin: ShieldCheck,
+  search: Search,
+  close: X,
+  trash: Trash2,
+  edit: SquarePen,
+  plus: Plus,
+  calendar: Calendar,
+  book: BookOpen,
+  award: Trophy,
+  sparkles: Sparkles,
+  clock: Clock,
+  tag: Tag,
+  camera: Camera,
+  globe: Globe,
+  moon: Moon,
+  sun: Sun,
+  logout: LogOut,
+  crown: Crown,
+  newspaper: Newspaper,
+  users: Users,
+  filter: Filter,
+  arrowLeft: ArrowLeft,
+  compass: Compass,
+  help: HelpCircle,
+  theater: Film,
+  briefcase: Briefcase,
+  brain: Brain,
+  lightbulb: Lightbulb,
 };
 
 interface AnimatedIconProps {
   icon: keyof typeof iconMap;
-  trigger?: 'hover' | 'loop' | 'loop-on-hover' | 'click' | 'morph' | 'boomerang';
+  trigger?: string;
   size?: number;
   className?: string;
-  colors?: string; // Kept for interface compatibility but ignored as Fc icons are pre-colored
+  colors?: string;
 }
 
 export function AnimatedIcon({ 
@@ -76,12 +78,12 @@ export function AnimatedIcon({
   size = 24, 
   className = ''
 }: AnimatedIconProps) {
-  const IconComponent = iconMap[icon] || FcHome;
+  const IconComponent = iconMap[icon] || Home;
 
   return (
     <IconComponent 
-      style={{ width: `${size}px`, height: `${size}px` }} 
-      className={`inline-block shrink-0 ${className}`} 
+      size={size} 
+      className={`inline-block shrink-0 stroke-[2] ${className}`} 
     />
   );
 }
