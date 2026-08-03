@@ -26,6 +26,12 @@ export function Login() {
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpData, setOtpData] = useState({ emailCode: '', phoneCode: '' });
 
+  // Delivery Diagnostic State
+  const [deliveryInfo, setDeliveryInfo] = useState<{
+    email?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
+    sms?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
+  }>({});
+
   const { login, verify2FA, resend2FACode, verifyRegistration, resendVerificationCode } = useAuth();
   const navigate = useNavigate();
 
@@ -33,6 +39,7 @@ export function Login() {
     e.preventDefault();
     setError('');
     setInfoMessage('');
+    setDeliveryInfo({});
     setIsLoading(true);
 
     const result = await login(emailOrPhone, password);
@@ -43,11 +50,13 @@ export function Login() {
     } else if (result.require2FA) {
       setIs2FA(true);
       setTempUserId(result.tempUserId || '');
-      setInfoMessage('Código de autenticação enviado para o seu e-mail cadastrado.');
+      setDeliveryInfo({ email: result.emailDelivery });
+      setInfoMessage('Código de autenticação de 2 fatores gerado.');
     } else if (result.verificationRequired) {
       setIsPendingVerification(true);
       setPendingEmail(result.email || '');
-      setInfoMessage('Sua conta precisa de verificação inicial. Códigos enviados por e-mail e SMS.');
+      setDeliveryInfo({ email: result.emailDelivery, sms: result.smsDelivery });
+      setInfoMessage('Sua conta precisa de verificação inicial.');
     } else {
       setError(result.error || 'Email/telefone ou senha incorretos');
     }
@@ -78,7 +87,8 @@ export function Login() {
     setResendLoading(false);
 
     if (result.success) {
-      setInfoMessage(result.message || 'Novo código 2FA enviado para seu e-mail!');
+      setDeliveryInfo({ email: result.emailDelivery });
+      setInfoMessage(result.message || 'Novo código 2FA enviado!');
     } else {
       setError(result.error || 'Falha ao reenviar código 2FA');
     }
@@ -109,7 +119,8 @@ export function Login() {
     setResendLoading(false);
 
     if (result.success) {
-      setInfoMessage(result.message || 'Novos códigos enviados por e-mail e SMS!');
+      setDeliveryInfo({ email: result.emailDelivery, sms: result.smsDelivery });
+      setInfoMessage(result.message || 'Novos códigos de verificação enviados!');
     } else {
       setError(result.error || 'Falha ao reenviar códigos');
     }
@@ -159,6 +170,31 @@ export function Login() {
 
             {infoMessage && (
               <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
+            )}
+
+            {deliveryInfo.email && (
+              <div className={`p-3 rounded-lg text-xs space-y-1 border ${
+                deliveryInfo.email.mode === 'production' && deliveryInfo.email.success
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                  : deliveryInfo.email.mode === 'simulation'
+                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400'
+                  : 'bg-destructive/10 border-destructive/20 text-destructive'
+              }`}>
+                <div className="font-semibold flex items-center gap-1.5">
+                  <span>✉️ Status do E-mail:</span>
+                  <span>
+                    {deliveryInfo.email.mode === 'production'
+                      ? (deliveryInfo.email.success ? 'Enviado via SMTP Real' : 'Falha na Conexão SMTP')
+                      : 'Modo Simulação (Sem SMTP)'}
+                  </span>
+                </div>
+                {deliveryInfo.email.details && (
+                  <p className="text-[11px] opacity-90 leading-relaxed">{deliveryInfo.email.details}</p>
+                )}
+                {deliveryInfo.email.error && (
+                  <p className="text-[11px] font-mono bg-destructive/10 p-1.5 rounded border border-destructive/20 text-destructive">{deliveryInfo.email.error}</p>
+                )}
+              </div>
             )}
 
             {error && (
@@ -225,6 +261,31 @@ export function Login() {
 
             {infoMessage && (
               <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
+            )}
+
+            {deliveryInfo.email && (
+              <div className={`p-3 rounded-lg text-xs space-y-1 border ${
+                deliveryInfo.email.mode === 'production' && deliveryInfo.email.success
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                  : deliveryInfo.email.mode === 'simulation'
+                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400'
+                  : 'bg-destructive/10 border-destructive/20 text-destructive'
+              }`}>
+                <div className="font-semibold flex items-center gap-1.5">
+                  <span>✉️ Status do E-mail:</span>
+                  <span>
+                    {deliveryInfo.email.mode === 'production'
+                      ? (deliveryInfo.email.success ? 'Enviado via SMTP Real' : 'Falha na Conexão SMTP')
+                      : 'Modo Simulação (Sem SMTP)'}
+                  </span>
+                </div>
+                {deliveryInfo.email.details && (
+                  <p className="text-[11px] opacity-90 leading-relaxed">{deliveryInfo.email.details}</p>
+                )}
+                {deliveryInfo.email.error && (
+                  <p className="text-[11px] font-mono bg-destructive/10 p-1.5 rounded border border-destructive/20 text-destructive">{deliveryInfo.email.error}</p>
+                )}
+              </div>
             )}
 
             {error && (

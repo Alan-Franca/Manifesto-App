@@ -45,6 +45,13 @@ function migratePreferences(preferences?: string[]): string[] {
   return Array.from(new Set(migrated));
 }
 
+export interface DeliveryInfo {
+  success: boolean;
+  mode: 'production' | 'simulation';
+  error?: string;
+  details?: string;
+}
+
 export interface LoginResult {
   success: boolean;
   require2FA?: boolean;
@@ -52,22 +59,34 @@ export interface LoginResult {
   tempUserId?: string;
   email?: string;
   error?: string;
+  emailDelivery?: DeliveryInfo;
+  smsDelivery?: DeliveryInfo;
 }
 
 export interface RegisterResult {
   success: boolean;
   email?: string;
   error?: string;
+  emailDelivery?: DeliveryInfo;
+  smsDelivery?: DeliveryInfo;
+}
+
+interface ResendResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+  emailDelivery?: DeliveryInfo;
+  smsDelivery?: DeliveryInfo;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (emailOrPhone: string, password: string) => Promise<LoginResult>;
   verify2FA: (tempUserId: string, code: string) => Promise<boolean>;
-  resend2FACode: (tempUserId: string) => Promise<{ success: boolean; message?: string; error?: string }>;
+  resend2FACode: (tempUserId: string) => Promise<ResendResult>;
   register: (data: Omit<User, 'id'> & { password: string }) => Promise<RegisterResult>;
   verifyRegistration: (email: string, emailCode: string, phoneCode: string) => Promise<boolean>;
-  resendVerificationCode: (email: string) => Promise<{ success: boolean; message?: string; error?: string }>;
+  resendVerificationCode: (email: string) => Promise<ResendResult>;
   logout: () => void;
   updateUser: (data: Partial<User>) => Promise<boolean>;
   isAuthenticated: boolean;
@@ -80,6 +99,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const logDeliveryDiagnostics = (label: string, emailDelivery?: DeliveryInfo, smsDelivery?: DeliveryInfo) => {
+    console.group(`[MANIFESTO AUTH DIAGNÓSTICO - ${label}]`);
+    if (emailDelivery) {
+      if (emailDelivery.mode === 'production') {
+        if (emailDelivery.success) {
+          console.log(`%c[E-MAIL REAL DE PRODUÇÃO] Sent: ${emailDelivery.details}`, 'color: #10b981; font-weight: bold;');
+        } else {
+          console.error(`%c[ERRO E-MAIL REAL SMTP] Falha no disparo de e-mail: ${emailDelivery.error}`, 'color: #ef4444; font-weight: bold;');
+          console.error(`Detalhes: ${emailDelivery.details}`);
+        }
+      } else {
+        console.warn(`%c[E-MAIL SIMULAÇÃO/TESTE] ${emailDelivery.details}`, 'color: #f59e0b; font-weight: bold;');
+      }
+    }
+    if (smsDelivery) {
+      if (smsDelivery.mode === 'production') {
+        if (smsDelivery.success) {
+          console.log(`%c[SMS REAL TWILIO] Sent: ${smsDelivery.details}`, 'color: #10b981; font-weight: bold;');
+        } else {
+          console.error(`%c[ERRO SMS REAL TWILIO] Falha no disparo de SMS: ${smsDelivery.error}`, 'color: #ef4444; font-weight: bold;');
+        }
+      } else {
+        console.warn(`%c[SMS SIMULAÇÃO/TESTE] ${smsDelivery.details}`, 'color: #f59e0b; font-weight: bold;');
+      }
+    }
+    console.groupEnd();
+  };
 
   useEffect(() => {
     async function loadUser() {
@@ -128,12 +175,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const data = await res.json();
 
+      logDeliveryDiagnostics('Login', data.emailDelivery, data.smsDelivery);
+
       if (res.status === 202 && data.verificationRequired) {
         return {
           success: false,
           verificationRequired: true,
           email: data.email,
-          error: data.message
+          error: data.message,
+          emailDelivery: data.emailDelivery,
+          smsDelivery: data.smsDelivery
         };
       }
 
@@ -142,7 +193,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return {
             success: false,
             require2FA: true,
-            tempUserId: data.tempUserId
+            tempUserId: data.tempUserId,
+            emailDelivery: data.emailDelivery
           };
         }
 
@@ -201,7 +253,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const resend2FACode = async (tempUserId: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+  const resend2FACode = async (tempUserId: string): Promise<ResendResult> => {
     try {
       const res = await fetch('/api/auth/resend-2fa', {
         method: 'POST',
@@ -212,8 +264,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       const data = await res.json();
+      logDeliveryDiagnostics('Reenviar 2FA', data.emailDelivery, undefined);
+
       if (res.ok) {
-        return { success: true, message: data.message };
+        return { success: true, message: data.message, emailDelivery: data.emailDelivery };
       } else {
         return { success: false, error: data.error || 'Erro ao reenviar código 2FA' };
       }
@@ -234,11 +288,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       const responseData = await res.json();
+      logDeliveryDiagnostics('Cadastro Inicial', responseData.emailDelivery, responseData.smsDelivery);
 
       if (res.ok || res.status === 201) {
         return {
           success: true,
-          email: data.email
+          email: data.email,
+          emailDelivery: responseData.emailDelivery,
+          smsDelivery: responseData.smsDelivery
         };
       } else {
         return {
@@ -285,7 +342,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const resendVerificationCode = async (email: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+  const resendVerificationCode = async (email: string): Promise<ResendResult> => {
     try {
       const res = await fetch('/api/auth/resend-verification', {
         method: 'POST',
@@ -296,8 +353,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       const data = await res.json();
+      logDeliveryDiagnostics('Reenviar Verificação de Cadastro', data.emailDelivery, data.smsDelivery);
+
       if (res.ok) {
-        return { success: true, message: data.message };
+        return {
+          success: true,
+          message: data.message,
+          emailDelivery: data.emailDelivery,
+          smsDelivery: data.smsDelivery
+        };
       } else {
         return { success: false, error: data.error || 'Erro ao reenviar códigos' };
       }

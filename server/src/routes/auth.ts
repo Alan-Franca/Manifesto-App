@@ -62,12 +62,14 @@ router.post('/register', async (req: any, res: any) => {
         await existingUser.save();
 
         // Send OTPs via configured production channels (or falls back to simulator logs)
-        await sendEmailOTP(email, emailCode);
-        await sendSMSOTP(phone, phoneCode);
+        const emailDelivery = await sendEmailOTP(email, emailCode);
+        const smsDelivery = await sendSMSOTP(phone, phoneCode);
 
         return res.json({
-          message: 'Usuário pré-cadastrado. Novos códigos de verificação foram enviados por e-mail e SMS.',
+          message: 'Usuário pré-cadastrado. Novos códigos de verificação foram gerados.',
           email,
+          emailDelivery,
+          smsDelivery
         });
       } else {
         return res.status(400).json({ error: 'E-mail ou Telefone já cadastrado' });
@@ -93,12 +95,14 @@ router.post('/register', async (req: any, res: any) => {
     await newUser.save();
 
     // Send OTPs via configured production channels (or falls back to simulator logs)
-    await sendEmailOTP(email, emailCode);
-    await sendSMSOTP(phone, phoneCode);
+    const emailDelivery = await sendEmailOTP(email, emailCode);
+    const smsDelivery = await sendSMSOTP(phone, phoneCode);
 
     return res.status(201).json({
-      message: 'Cadastro inicial realizado com sucesso. Códigos de verificação enviados por e-mail e SMS.',
+      message: 'Cadastro inicial realizado com sucesso.',
       email,
+      emailDelivery,
+      smsDelivery
     });
   } catch (error: any) {
     console.error('Erro no cadastro:', error);
@@ -194,13 +198,15 @@ router.post('/login', async (req: any, res: any) => {
       await user.save();
 
       // Send OTPs
-      await sendEmailOTP(user.email, emailCode);
-      await sendSMSOTP(user.phone, phoneCode);
+      const emailDelivery = await sendEmailOTP(user.email, emailCode);
+      const smsDelivery = await sendSMSOTP(user.phone, phoneCode);
 
       return res.status(202).json({
         verificationRequired: true,
         email: user.email,
-        message: 'Por favor, verifique seu e-mail e telefone para concluir o cadastro.'
+        message: 'Por favor, verifique seu e-mail e telefone para concluir o cadastro.',
+        emailDelivery,
+        smsDelivery
       });
     }
 
@@ -214,12 +220,13 @@ router.post('/login', async (req: any, res: any) => {
       await user.save();
 
       // Send 2FA code via email
-      await sendEmailOTP(user.email, otpCode);
+      const emailDelivery = await sendEmailOTP(user.email, otpCode);
 
       return res.json({
         require2FA: true,
         tempUserId: user._id,
-        message: 'Código de autenticação de dois fatores enviado'
+        message: 'Código de autenticação de dois fatores enviado',
+        emailDelivery
       });
     }
 
@@ -350,10 +357,11 @@ router.post('/resend-2fa', async (req: any, res: any) => {
     user.loginOtpExpires = expires;
     await user.save();
 
-    await sendEmailOTP(user.email, otpCode);
+    const emailDelivery = await sendEmailOTP(user.email, otpCode);
 
     return res.json({
-      message: 'Novo código de autenticação de dois fatores enviado com sucesso.'
+      message: 'Novo código de autenticação de dois fatores enviado com sucesso.',
+      emailDelivery
     });
   } catch (error) {
     console.error('Erro ao reenviar código 2FA:', error);
@@ -386,11 +394,13 @@ router.post('/resend-verification', async (req: any, res: any) => {
     user.phoneVerificationCode = phoneCode;
     await user.save();
 
-    await sendEmailOTP(user.email, emailCode);
-    await sendSMSOTP(user.phone, phoneCode);
+    const emailDelivery = await sendEmailOTP(user.email, emailCode);
+    const smsDelivery = await sendSMSOTP(user.phone, phoneCode);
 
     return res.json({
-      message: 'Novos códigos de verificação foram enviados por e-mail e SMS com sucesso.'
+      message: 'Novos códigos de verificação foram enviados por e-mail e SMS com sucesso.',
+      emailDelivery,
+      smsDelivery
     });
   } catch (error) {
     console.error('Erro ao reenviar códigos de verificação:', error);

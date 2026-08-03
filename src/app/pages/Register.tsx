@@ -28,6 +28,11 @@ export function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
 
+  const [deliveryInfo, setDeliveryInfo] = useState<{
+    email?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
+    sms?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
+  }>({});
+
   const { register, verifyRegistration, resendVerificationCode } = useAuth();
   const navigate = useNavigate();
 
@@ -35,6 +40,7 @@ export function Register() {
     e.preventDefault();
     setError('');
     setInfoMessage('');
+    setDeliveryInfo({});
 
     if (formData.password !== formData.confirmPassword) {
       setError('As senhas não coincidem');
@@ -52,7 +58,17 @@ export function Register() {
 
     if (result.success) {
       setIsVerifying(true);
-      setInfoMessage('Códigos de verificação enviados por e-mail e SMS.');
+      setDeliveryInfo({
+        email: result.emailDelivery,
+        sms: result.smsDelivery
+      });
+      if (result.emailDelivery?.mode === 'simulation') {
+        setInfoMessage('Modo Simulação: O código foi gerado e impresso no terminal do servidor.');
+      } else if (result.emailDelivery?.success) {
+        setInfoMessage('Códigos de verificação enviados para seu e-mail e SMS.');
+      } else {
+        setInfoMessage('Cadastro criado, porém houve uma falha no envio do e-mail. Veja o diagnóstico abaixo.');
+      }
     } else {
       setError(result.error || 'Email ou telefone já cadastrado');
     }
@@ -87,7 +103,17 @@ export function Register() {
     setResendLoading(false);
 
     if (result.success) {
-      setInfoMessage(result.message || 'Novos códigos de verificação enviados!');
+      setDeliveryInfo({
+        email: result.emailDelivery,
+        sms: result.smsDelivery
+      });
+      if (result.emailDelivery?.mode === 'simulation') {
+        setInfoMessage('Modo Simulação: Novos códigos impressos no terminal do servidor.');
+      } else if (result.emailDelivery?.success) {
+        setInfoMessage(result.message || 'Novos códigos de verificação enviados!');
+      } else {
+        setInfoMessage('Novos códigos gerados, mas ocorreu erro no disparo do e-mail.');
+      }
     } else {
       setError(result.error || 'Falha ao reenviar códigos');
     }
@@ -161,6 +187,31 @@ export function Register() {
 
             {infoMessage && (
               <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
+            )}
+
+            {deliveryInfo.email && (
+              <div className={`p-3 rounded-lg text-xs space-y-1 border ${
+                deliveryInfo.email.mode === 'production' && deliveryInfo.email.success
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                  : deliveryInfo.email.mode === 'simulation'
+                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400'
+                  : 'bg-destructive/10 border-destructive/20 text-destructive'
+              }`}>
+                <div className="font-semibold flex items-center gap-1.5">
+                  <span>✉️ Status do E-mail:</span>
+                  <span>
+                    {deliveryInfo.email.mode === 'production'
+                      ? (deliveryInfo.email.success ? 'Enviado via SMTP Real' : 'Falha na Conexão SMTP')
+                      : 'Modo Simulação (Sem SMTP)'}
+                  </span>
+                </div>
+                {deliveryInfo.email.details && (
+                  <p className="text-[11px] opacity-90 leading-relaxed">{deliveryInfo.email.details}</p>
+                )}
+                {deliveryInfo.email.error && (
+                  <p className="text-[11px] font-mono bg-destructive/10 p-1.5 rounded border border-destructive/20 text-destructive">{deliveryInfo.email.error}</p>
+                )}
+              </div>
             )}
 
             {error && (
