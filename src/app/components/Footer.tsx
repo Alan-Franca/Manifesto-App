@@ -58,11 +58,11 @@ export function Footer() {
               <span className="font-medium">@jornalmanifesto</span>
             </a>
             <a
-              href="mailto:contato@jornalmanifesto.com"
+              href="mailto:jornalmanifesto@outlook.com"
               className="flex items-center gap-2 hover:text-primary hover:underline transition-colors duration-200"
             >
               <FcFeedback className="w-5 h-5" />
-              <span className="font-medium">contato@jornalmanifesto.com</span>
+              <span className="font-medium">jornalmanifesto@outlook.com</span>
             </a>
           </div>
         </div>
