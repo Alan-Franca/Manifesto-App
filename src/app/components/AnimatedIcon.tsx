@@ -28,8 +28,7 @@ import {
   Film,
   Briefcase,
   Brain,
-  Lightbulb,
-  LucideProps
+  Lightbulb
 } from 'lucide-react';
 
 const iconMap = {

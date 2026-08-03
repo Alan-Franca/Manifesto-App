@@ -18,7 +18,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 
 export function Admin() {
   const { user } = useAuth();
-  const { t, translateCategory } = useLanguage();
+  const { translateCategory } = useLanguage();
   const navigate = useNavigate();
 
   // Redirect if not admin
