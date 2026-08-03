@@ -5,23 +5,30 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Nodemailer Transport Config
-const emailHost = process.env.EMAIL_HOST;
+const emailHost = process.env.EMAIL_HOST || 'smtp-mail.outlook.com';
 const emailPort = parseInt(process.env.EMAIL_PORT || '587');
 const emailUser = process.env.EMAIL_USER;
 const emailPass = process.env.EMAIL_PASS;
-const emailFrom = process.env.EMAIL_FROM || 'no-reply@manifesto.com';
+const emailFrom = process.env.EMAIL_FROM || emailUser || 'jornalmanifesto@outlook.com';
 
 let emailTransporter: nodemailer.Transporter | null = null;
 
-if (emailHost && emailUser && emailPass) {
+if (emailUser && emailPass) {
+  const isMicrosoft = emailHost.includes('outlook') || emailHost.includes('office365') || emailHost.includes('live');
+
   emailTransporter = nodemailer.createTransport({
     host: emailHost,
     port: emailPort,
-    secure: emailPort === 465,
+    secure: emailPort === 465, // false for 587 (STARTTLS)
+    requireTLS: isMicrosoft,
     auth: {
       user: emailUser,
       pass: emailPass,
     },
+    tls: isMicrosoft ? {
+      ciphers: 'SSLv3',
+      rejectUnauthorized: false
+    } : undefined
   });
 }
 
