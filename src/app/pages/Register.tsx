@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
-import logo from '../../imports/image.png';
+import logo from '../../imports/newLogo.png';
 
 export function Register() {
   const [formData, setFormData] = useState({

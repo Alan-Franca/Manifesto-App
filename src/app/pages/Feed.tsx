@@ -5,7 +5,8 @@ import { NewsCard } from '../components/NewsCard';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../contexts/AuthContext';
 import { Footer } from '../components/Footer';
-import { CupBanner } from '../components/CupBanner';
+import { InstagramBanner } from '../components/InstagramBanner';
+import { PodcastSection } from '../components/PodcastSection';
 import { ScrapbookSticker } from '../components/ScrapbookSticker';
 import { AnimatedIcon } from '../components/AnimatedIcon';
 
@@ -131,8 +132,11 @@ export function Feed() {
           </div>
         </div>
 
-        {/* FIFA World Cup Matches Banner */}
-        <CupBanner />
+        {/* Instagram Direct Card */}
+        <InstagramBanner />
+
+        {/* Manifesto Podcast Section */}
+        <PodcastSection />
 
         {/* 1. WEEKLY SCHEDULE COMPONENT (Manifesto Semanal) */}
         <section className="mb-10 bg-card/40 rounded-2xl p-5 border border-border/80 shadow-sm backdrop-blur-sm">

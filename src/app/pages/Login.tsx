@@ -4,7 +4,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { useAuth } from '../contexts/AuthContext';
-import logo from '../../imports/image.png';
+import logo from '../../imports/newLogo.png';
 
 export function Login() {
   const [emailOrPhone, setEmailOrPhone] = useState('');

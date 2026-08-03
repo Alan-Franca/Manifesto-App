@@ -3,7 +3,7 @@ import { FcManager } from 'react-icons/fc';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedIcon } from './AnimatedIcon';
-import logo from '../../imports/image.png';
+import logo from '../../imports/newLogo.png';
 
 export function Header() {
   const { user } = useAuth();
