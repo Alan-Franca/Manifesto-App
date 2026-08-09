@@ -20,8 +20,7 @@ export function Register() {
   });
   const [isVerifying, setIsVerifying] = useState(false);
   const [otpData, setOtpData] = useState({
-    emailCode: '',
-    phoneCode: ''
+    emailCode: ''
   });
   const [error, setError] = useState('');
   const [infoMessage, setInfoMessage] = useState('');
@@ -30,7 +29,6 @@ export function Register() {
 
   const [deliveryInfo, setDeliveryInfo] = useState<{
     email?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
-    sms?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
   }>({});
 
   const { register, verifyRegistration, resendVerificationCode } = useAuth();
@@ -59,18 +57,17 @@ export function Register() {
     if (result.success) {
       setIsVerifying(true);
       setDeliveryInfo({
-        email: result.emailDelivery,
-        sms: result.smsDelivery
+        email: result.emailDelivery
       });
       if (result.emailDelivery?.mode === 'simulation') {
         setInfoMessage('Modo Simulação: O código foi gerado e impresso no terminal do servidor.');
       } else if (result.emailDelivery?.success) {
-        setInfoMessage('Códigos de verificação enviados para seu e-mail e SMS.');
+        setInfoMessage('Código de verificação enviado para seu e-mail.');
       } else {
         setInfoMessage('Cadastro criado, porém houve uma falha no envio do e-mail. Veja o diagnóstico abaixo.');
       }
     } else {
-      setError(result.error || 'Email ou telefone já cadastrado');
+      setError(result.error || 'E-mail já cadastrado');
     }
   };
 
@@ -82,15 +79,14 @@ export function Register() {
 
     const success = await verifyRegistration(
       formData.email,
-      otpData.emailCode,
-      otpData.phoneCode
+      otpData.emailCode
     );
     setIsLoading(false);
 
     if (success) {
       navigate('/preferences');
     } else {
-      setError('Código de e-mail ou telefone incorreto');
+      setError('Código de e-mail incorreto ou expirado');
     }
   };
 
@@ -104,18 +100,17 @@ export function Register() {
 
     if (result.success) {
       setDeliveryInfo({
-        email: result.emailDelivery,
-        sms: result.smsDelivery
+        email: result.emailDelivery
       });
       if (result.emailDelivery?.mode === 'simulation') {
-        setInfoMessage('Modo Simulação: Novos códigos impressos no terminal do servidor.');
+        setInfoMessage('Modo Simulação: Novo código impresso no terminal do servidor.');
       } else if (result.emailDelivery?.success) {
-        setInfoMessage(result.message || 'Novos códigos de verificação enviados!');
+        setInfoMessage(result.message || 'Novo código de verificação enviado por e-mail!');
       } else {
-        setInfoMessage('Novos códigos gerados, mas ocorreu erro no disparo do e-mail.');
+        setInfoMessage('Novo código gerado, mas ocorreu erro no disparo do e-mail.');
       }
     } else {
-      setError(result.error || 'Falha ao reenviar códigos');
+      setError(result.error || 'Falha ao reenviar código');
     }
   };
 
@@ -143,7 +138,7 @@ export function Register() {
             <>
               <h1 className="text-3xl mb-2 font-display font-bold text-primary">Verificar Conta</h1>
               <p className="text-muted-foreground text-sm">
-                Enviamos os códigos de confirmação por e-mail e SMS
+                Enviamos o código de confirmação para o seu e-mail
               </p>
             </>
           ) : (
@@ -168,20 +163,6 @@ export function Register() {
                 required
                 className="text-center font-mono text-lg tracking-widest"
                 autoFocus
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Código enviado para o Telefone ({formData.phone})</Label>
-              <Input
-                type="text"
-                name="phoneCode"
-                placeholder="000000"
-                value={otpData.phoneCode}
-                onChange={handleOtpChange}
-                maxLength={6}
-                required
-                className="text-center font-mono text-lg tracking-widest"
               />
             </div>
 
@@ -230,7 +211,7 @@ export function Register() {
                 onClick={handleResendCodes}
                 disabled={resendLoading || isLoading}
               >
-                {resendLoading ? 'Reenviando...' : 'Reenviar Códigos (E-mail e SMS)'}
+                {resendLoading ? 'Reenviando...' : 'Reenviar Código (E-mail)'}
               </Button>
 
               <Button
@@ -269,18 +250,6 @@ export function Register() {
                 name="email"
                 placeholder="seu@email.com"
                 value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('register.phone')}</Label>
-              <Input
-                type="tel"
-                name="phone"
-                placeholder="(11) 99999-9999"
-                value={formData.phone}
                 onChange={handleChange}
                 required
               />

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 import { isDisposableEmail } from '../utils/disposableEmails.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.js';
-import { sendEmailOTP, sendSMSOTP } from '../utils/notification.js';
+import { sendEmailOTP } from '../utils/notification.js';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_manifesto_token_key_123!';
@@ -18,8 +18,8 @@ router.post('/register', async (req: any, res: any) => {
   const { name, email, phone, gender, password } = req.body;
 
   try {
-    if (!name || !email || !phone || !gender || !password) {
-      return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+    if (!name || !email || !gender || !password) {
+      return res.status(400).json({ error: 'Nome, e-mail, gênero e senha são obrigatórios' });
     }
 
     // Validation: Disposable Email
@@ -35,74 +35,57 @@ router.post('/register', async (req: any, res: any) => {
       return res.status(400).json({ error: 'Formato de e-mail inválido' });
     }
 
-    // Format check for phone (DDD + 8 or 9 digits)
-    const cleanPhone = phone.replace(/\D/g, '');
-    if (cleanPhone.length < 10 || cleanPhone.length > 11) {
-      return res.status(400).json({ error: 'Número de telefone inválido. Deve incluir DDD.' });
-    }
-
     // Check if user exists
-    const existingUser = await User.findOne({ 
-      $or: [{ email: email.toLowerCase() }, { phone }] 
-    });
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
 
     if (existingUser) {
-      // If the user already exists but is NOT verified yet, we can update their verification codes
-      // and allow them to request new verification codes.
-      if (!existingUser.emailVerified || !existingUser.phoneVerified) {
+      // If the user already exists but is NOT verified yet, update verification code
+      if (!existingUser.emailVerified) {
         const emailCode = generateOTP();
-        const phoneCode = generateOTP();
 
         existingUser.name = name;
         existingUser.password = password; // pre-save hook will hash it
         existingUser.gender = gender;
+        if (phone) existingUser.phone = phone;
         existingUser.emailVerificationCode = emailCode;
-        existingUser.phoneVerificationCode = phoneCode;
         
         await existingUser.save();
 
-        // Send OTPs via configured production channels (or falls back to simulator logs)
         const emailDelivery = await sendEmailOTP(email, emailCode);
-        const smsDelivery = await sendSMSOTP(phone, phoneCode);
 
         return res.json({
-          message: 'Usuário pré-cadastrado. Novos códigos de verificação foram gerados.',
+          message: 'Usuário pré-cadastrado. Novo código de verificação enviado por e-mail.',
           email,
-          emailDelivery,
-          smsDelivery
+          emailDelivery
         });
       } else {
-        return res.status(400).json({ error: 'E-mail ou Telefone já cadastrado' });
+        return res.status(400).json({ error: 'E-mail já cadastrado' });
       }
     }
 
-    // Generate verification codes
+    // Generate verification code
     const emailCode = generateOTP();
-    const phoneCode = generateOTP();
 
     const newUser = new User({
       name,
       email: email.toLowerCase(),
-      phone,
+      phone: phone || '',
       gender,
       password, // hashed by mongoose hook
       emailVerificationCode: emailCode,
-      phoneVerificationCode: phoneCode,
       emailVerified: false,
-      phoneVerified: false
+      phoneVerified: true
     });
 
     await newUser.save();
 
-    // Send OTPs via configured production channels (or falls back to simulator logs)
+    // Send OTP via email
     const emailDelivery = await sendEmailOTP(email, emailCode);
-    const smsDelivery = await sendSMSOTP(phone, phoneCode);
 
     return res.status(201).json({
-      message: 'Cadastro inicial realizado com sucesso.',
+      message: 'Cadastro inicial realizado com sucesso. Verifique seu e-mail.',
       email,
-      emailDelivery,
-      smsDelivery
+      emailDelivery
     });
   } catch (error: any) {
     console.error('Erro no cadastro:', error);
@@ -112,11 +95,11 @@ router.post('/register', async (req: any, res: any) => {
 
 // 2. VERIFY REGISTRATION CODES
 router.post('/verify-registration', async (req: any, res: any) => {
-  const { email, emailCode, phoneCode } = req.body;
+  const { email, emailCode } = req.body;
 
   try {
-    if (!email || !emailCode || !phoneCode) {
-      return res.status(400).json({ error: 'E-mail e ambos os códigos são necessários' });
+    if (!email || !emailCode) {
+      return res.status(400).json({ error: 'E-mail e código de verificação são necessários' });
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
@@ -125,15 +108,11 @@ router.post('/verify-registration', async (req: any, res: any) => {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    // Check codes
+    // Check code
     const isEmailCodeValid = user.emailVerificationCode === emailCode;
-    const isPhoneCodeValid = user.phoneVerificationCode === phoneCode;
 
-    if (!isEmailCodeValid || !isPhoneCodeValid) {
-      let errors = [];
-      if (!isEmailCodeValid) errors.push('Código do E-mail inválido');
-      if (!isPhoneCodeValid) errors.push('Código do Telefone inválido');
-      return res.status(400).json({ error: errors.join(' e ') });
+    if (!isEmailCodeValid) {
+      return res.status(400).json({ error: 'Código de verificação do E-mail inválido ou expirado' });
     }
 
     // Verify user
@@ -162,51 +141,47 @@ router.post('/verify-registration', async (req: any, res: any) => {
 
 // 3. LOGIN
 router.post('/login', async (req: any, res: any) => {
-  const { emailOrPhone, password } = req.body;
+  const { email, emailOrPhone, password } = req.body;
+  const inputEmail = (email || emailOrPhone || '').trim().toLowerCase();
 
   try {
-    if (!emailOrPhone || !password) {
-      return res.status(400).json({ error: 'E-mail/Telefone e senha são obrigatórios' });
+    if (!inputEmail || !password) {
+      return res.status(400).json({ error: 'E-mail e senha são obrigatórios' });
     }
 
-    // Find user by email or phone
+    // Find user by email or phone fallback
     const user = await User.findOne({
       $or: [
-        { email: emailOrPhone.toLowerCase() },
-        { phone: emailOrPhone }
+        { email: inputEmail },
+        { phone: inputEmail }
       ]
     });
 
     if (!user) {
-      return res.status(400).json({ error: 'E-mail/Telefone ou senha incorretos' });
+      return res.status(400).json({ error: 'E-mail ou senha incorretos' });
     }
 
     // Match password
     const isMatch = await (user as any).comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'E-mail/Telefone ou senha incorretos' });
+      return res.status(400).json({ error: 'E-mail ou senha incorretos' });
     }
 
     // Check if registration verification is complete
-    if (!user.emailVerified || !user.phoneVerified) {
-      // Re-send verification codes if they were never verified
+    if (!user.emailVerified) {
       const emailCode = generateOTP();
-      const phoneCode = generateOTP();
 
       user.emailVerificationCode = emailCode;
-      user.phoneVerificationCode = phoneCode;
       await user.save();
 
-      // Send OTPs
+      // Send OTP
       const emailDelivery = await sendEmailOTP(user.email, emailCode);
-      const smsDelivery = await sendSMSOTP(user.phone, phoneCode);
 
       return res.status(202).json({
         verificationRequired: true,
         email: user.email,
-        message: 'Por favor, verifique seu e-mail e telefone para concluir o cadastro.',
-        emailDelivery,
-        smsDelivery
+        message: 'Por favor, verifique seu e-mail para concluir o cadastro.',
+        emailDelivery
       });
     }
 
@@ -383,24 +358,20 @@ router.post('/resend-verification', async (req: any, res: any) => {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    if (user.emailVerified && user.phoneVerified) {
+    if (user.emailVerified) {
       return res.status(400).json({ error: 'Este usuário já está com o cadastro verificado' });
     }
 
     const emailCode = generateOTP();
-    const phoneCode = generateOTP();
 
     user.emailVerificationCode = emailCode;
-    user.phoneVerificationCode = phoneCode;
     await user.save();
 
     const emailDelivery = await sendEmailOTP(user.email, emailCode);
-    const smsDelivery = await sendSMSOTP(user.phone, phoneCode);
 
     return res.json({
-      message: 'Novos códigos de verificação foram enviados por e-mail e SMS com sucesso.',
-      emailDelivery,
-      smsDelivery
+      message: 'Novo código de verificação enviado por e-mail com sucesso.',
+      emailDelivery
     });
   } catch (error) {
     console.error('Erro ao reenviar códigos de verificação:', error);

@@ -48,8 +48,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Auth (Login & Register)
     'login.title': 'Seja bem-vindo de volta',
-    'login.subtitle': 'Digite seu e-mail ou telefone e senha para acessar sua conta.',
-    'login.email_or_phone': 'E-mail ou Telefone',
+    'login.subtitle': 'Digite seu e-mail e senha para acessar sua conta.',
+    'login.email_or_phone': 'E-mail',
     'login.password': 'Senha',
     'login.enter': 'Entrar na conta',
     'login.loading': 'Entrando...',

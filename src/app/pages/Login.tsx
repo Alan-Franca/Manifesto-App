@@ -24,12 +24,11 @@ export function Login() {
   // States for Pending Registration Verification
   const [isPendingVerification, setIsPendingVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState('');
-  const [otpData, setOtpData] = useState({ emailCode: '', phoneCode: '' });
+  const [otpData, setOtpData] = useState({ emailCode: '' });
 
   // Delivery Diagnostic State
   const [deliveryInfo, setDeliveryInfo] = useState<{
     email?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
-    sms?: { success: boolean; mode: 'production' | 'simulation'; error?: string; details?: string };
   }>({});
 
   const { login, verify2FA, resend2FACode, verifyRegistration, resendVerificationCode } = useAuth();
@@ -55,10 +54,10 @@ export function Login() {
     } else if (result.verificationRequired) {
       setIsPendingVerification(true);
       setPendingEmail(result.email || '');
-      setDeliveryInfo({ email: result.emailDelivery, sms: result.smsDelivery });
+      setDeliveryInfo({ email: result.emailDelivery });
       setInfoMessage('Sua conta precisa de verificação inicial.');
     } else {
-      setError(result.error || 'Email/telefone ou senha incorretos');
+      setError(result.error || 'E-mail ou senha incorretos');
     }
   };
 
@@ -100,13 +99,13 @@ export function Login() {
     setInfoMessage('');
     setIsLoading(true);
 
-    const success = await verifyRegistration(pendingEmail, otpData.emailCode, otpData.phoneCode);
+    const success = await verifyRegistration(pendingEmail, otpData.emailCode);
     setIsLoading(false);
 
     if (success) {
       navigate('/preferences');
     } else {
-      setError('Código de e-mail ou telefone incorreto');
+      setError('Código de e-mail incorreto ou expirado');
     }
   };
 
@@ -119,10 +118,10 @@ export function Login() {
     setResendLoading(false);
 
     if (result.success) {
-      setDeliveryInfo({ email: result.emailDelivery, sms: result.smsDelivery });
-      setInfoMessage(result.message || 'Novos códigos de verificação enviados!');
+      setDeliveryInfo({ email: result.emailDelivery });
+      setInfoMessage(result.message || 'Novo código de verificação enviado por e-mail!');
     } else {
-      setError(result.error || 'Falha ao reenviar códigos');
+      setError(result.error || 'Falha ao reenviar código');
     }
   };
 
@@ -246,19 +245,6 @@ export function Login() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Código enviado para o Telefone (SMS)</Label>
-              <Input
-                type="text"
-                placeholder="000000"
-                value={otpData.phoneCode}
-                onChange={(e) => setOtpData(prev => ({ ...prev, phoneCode: e.target.value }))}
-                maxLength={6}
-                required
-                className="text-center font-mono text-lg tracking-widest"
-              />
-            </div>
-
             {infoMessage && (
               <p className="text-primary text-xs font-semibold text-center bg-primary/10 p-2.5 rounded-lg border border-primary/20">{infoMessage}</p>
             )}
@@ -304,7 +290,7 @@ export function Login() {
                 onClick={handleResendVerification}
                 disabled={resendLoading || isLoading}
               >
-                {resendLoading ? 'Reenviando...' : 'Reenviar Códigos (E-mail e SMS)'}
+                {resendLoading ? 'Reenviando...' : 'Reenviar Código (E-mail)'}
               </Button>
 
               <Button
@@ -325,9 +311,9 @@ export function Login() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>{t('login.email_or_phone')}</Label>
+              <Label>E-mail</Label>
               <Input
-                type="text"
+                type="email"
                 placeholder="seu@email.com"
                 value={emailOrPhone}
                 onChange={(e) => setEmailOrPhone(e.target.value)}

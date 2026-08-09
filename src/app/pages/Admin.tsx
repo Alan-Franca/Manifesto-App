@@ -365,7 +365,7 @@ export function Admin() {
                       <TableHead className="w-[60px]">Foto</TableHead>
                       <TableHead>Nome</TableHead>
                       <TableHead>E-mail</TableHead>
-                      <TableHead>Telefone</TableHead>
+                      <TableHead>Verificação</TableHead>
                       <TableHead>Papel (Role)</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -384,7 +384,17 @@ export function Admin() {
                         </TableCell>
                         <TableCell className="font-medium">{u.name}</TableCell>
                         <TableCell>{u.email}</TableCell>
-                        <TableCell>{u.phone}</TableCell>
+                        <TableCell className="text-xs">
+                          {u.emailVerified ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                              ✓ E-mail Verificado
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                              Pendente
+                            </span>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Button
                             onClick={() => handleUpdateUser(u._id, { role: u.role === 'admin' ? 'user' : 'admin' })}

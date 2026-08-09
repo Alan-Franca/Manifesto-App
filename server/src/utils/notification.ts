@@ -22,20 +22,33 @@ let emailTransporter: nodemailer.Transporter | null = null;
 
 if (emailUser && emailPass) {
   const isMicrosoft = emailHost.includes('outlook') || emailHost.includes('office365') || emailHost.includes('live');
+  const isGmail = emailHost.includes('gmail');
 
-  emailTransporter = nodemailer.createTransport({
+  const transportConfig: any = {
     host: emailHost,
     port: emailPort,
-    secure: emailPort === 465, // false for 587 (STARTTLS)
-    requireTLS: isMicrosoft,
+    secure: emailPort === 465, // true for 465, false for 587
     auth: {
       user: emailUser,
       pass: emailPass,
     },
+    connectionTimeout: 5000, // 5s timeout to prevent hanging
+    greetingTimeout: 5000,
+    socketTimeout: 5000,
     tls: {
       rejectUnauthorized: false
     }
-  });
+  };
+
+  if (isMicrosoft) {
+    transportConfig.requireTLS = true;
+  }
+
+  if (isGmail && emailPort === 465) {
+    transportConfig.secure = true;
+  }
+
+  emailTransporter = nodemailer.createTransport(transportConfig);
 }
 
 // Twilio Config

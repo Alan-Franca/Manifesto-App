@@ -4,7 +4,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
   gender: string;
   profileImage?: string;
   preferences?: string[];
@@ -85,7 +85,7 @@ interface AuthContextType {
   verify2FA: (tempUserId: string, code: string) => Promise<boolean>;
   resend2FACode: (tempUserId: string) => Promise<ResendResult>;
   register: (data: Omit<User, 'id'> & { password: string }) => Promise<RegisterResult>;
-  verifyRegistration: (email: string, emailCode: string, phoneCode: string) => Promise<boolean>;
+  verifyRegistration: (email: string, emailCode: string) => Promise<boolean>;
   resendVerificationCode: (email: string) => Promise<ResendResult>;
   logout: () => void;
   updateUser: (data: Partial<User>) => Promise<boolean>;
@@ -312,14 +312,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const verifyRegistration = async (email: string, emailCode: string, phoneCode: string): Promise<boolean> => {
+  const verifyRegistration = async (email: string, emailCode: string): Promise<boolean> => {
     try {
       const res = await fetch('/api/auth/verify-registration', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, emailCode, phoneCode })
+        body: JSON.stringify({ email, emailCode })
       });
 
       if (res.ok) {
