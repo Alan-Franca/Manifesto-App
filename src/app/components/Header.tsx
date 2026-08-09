@@ -15,7 +15,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 h-20 bg-background/95 backdrop-blur-md border-b border-border z-50 transition-all duration-300">
-      <div className="h-full max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <div className="h-full w-full px-4 sm:px-6 md:px-8 flex items-center justify-between">
         <button onClick={() => navigate('/feed')} className="flex-shrink-0 cursor-pointer">
           <img src={logo} alt="Manifesto" className="h-14 w-auto object-contain transition-all duration-300 hover:scale-105" />
         </button>
