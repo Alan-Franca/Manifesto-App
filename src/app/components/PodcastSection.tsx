@@ -51,7 +51,7 @@ export function PodcastSection() {
 
   return (
     <section className="mb-12 bg-card rounded-2xl p-6 md:p-8 border border-border shadow-md transition-all duration-300">
-      
+
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
         <div className="flex items-center gap-3">
@@ -89,13 +89,13 @@ export function PodcastSection() {
 
       {/* Main Grid: Visualizer Player + Episode Details */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* Left Col: Main Visualizer Player (7 cols) */}
         <div className="lg:col-span-7 flex flex-col space-y-4">
-          
+
           {/* Main Visualizer Container */}
           <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-border shadow-xl group">
-            
+
             {isPlaying && selectedEpisode.youtubeId ? (
               <iframe
                 key={selectedEpisode.id}
@@ -108,7 +108,7 @@ export function PodcastSection() {
             ) : (
               /* Custom Visualizer Banner with Thumbnail Cover */
               <div className="relative w-full h-full bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-4 sm:p-6">
-                
+
                 {/* Background Thumbnail Image */}
                 <img
                   src={selectedEpisode.thumbnailUrl || `https://img.youtube.com/vi/${selectedEpisode.youtubeId}/hqdefault.jpg`}
@@ -212,11 +212,10 @@ export function PodcastSection() {
                 <div
                   key={ep.id}
                   onClick={() => handleSelectEpisode(ep)}
-                  className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-3 group ${
-                    isSelected
+                  className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-start gap-3 group ${isSelected
                       ? 'bg-primary/10 border-primary shadow-sm'
                       : 'bg-card hover:bg-secondary/60 border-border hover:border-primary/40'
-                  }`}
+                    }`}
                 >
                   {/* Thumbnail Preview */}
                   <div className="relative flex-shrink-0 w-28 aspect-video rounded-lg overflow-hidden bg-muted border border-border group-hover:scale-102 transition-transform">
@@ -241,9 +240,8 @@ export function PodcastSection() {
                       <span className={ep.isPremiere ? 'text-red-500 font-bold' : ''}>{ep.duration}</span>
                     </div>
 
-                    <h4 className={`text-xs font-bold font-sans line-clamp-2 leading-snug transition-colors ${
-                      isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                    }`}>
+                    <h4 className={`text-xs font-bold font-sans line-clamp-2 leading-snug transition-colors ${isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary'
+                      }`}>
                       {ep.title}
                     </h4>
 
@@ -257,9 +255,6 @@ export function PodcastSection() {
 
             {/* Teaser Box for Future Episodes */}
             <div className="p-4 rounded-xl border border-dashed border-border bg-muted/20 text-center space-y-1 mt-4">
-              <span className="text-xs font-bold text-muted-foreground">
-                🎙️ Novos episódios semanalmente
-              </span>
               <p className="text-[11px] text-muted-foreground/80">
                 Inscreva-se no canal <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="text-red-500 font-bold hover:underline">@JornalManifesto</a> para não perder os próximos lançamentos!
               </p>
