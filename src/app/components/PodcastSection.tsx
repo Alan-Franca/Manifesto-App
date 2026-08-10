@@ -1,32 +1,45 @@
 import { useState } from 'react';
-import { Play, Youtube, Mic, Clock, ExternalLink, Radio, Sparkles } from 'lucide-react';
+import { Play, Youtube, Mic, Clock, ExternalLink, Radio, Sparkles, Calendar, Bell } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import ep1Thumbnail from '../../imports/podcast-ep1-thumbnail.png';
 
 interface Episode {
   id: string;
-  youtubeId: string;
+  youtubeId?: string;
+  thumbnailUrl?: string;
   title: string;
   description: string;
   duration: string;
   date: string;
   episodeNumber: number;
   tags: string[];
+  isPremiere?: boolean;
+  premiereDate?: string;
+  premiereTime?: string;
+  videoUrl?: string;
 }
+
+const CHANNEL_URL = 'https://www.youtube.com/@JornalManifesto';
 
 const PODCAST_EPISODES: Episode[] = [
   {
     id: 'ep-1',
-    youtubeId: 'L_LUpnjgPso', // Example video ID
-    title: 'O Futuro da Educação e Tecnologias Emergentes',
-    description: 'Neste episódio de estreia do Podcast Manifesto, debatemos o impacto da inteligência artificial e novas tecnologias na formação dos jovens e no mercado de trabalho.',
-    duration: '42 min',
-    date: '28 de Julho',
+    youtubeId: '', // Direct link to channel premiere
+    thumbnailUrl: ep1Thumbnail,
+    title: 'Desvio De Rota! — Episódio 01, Nathalia Brasil',
+    description: 'Neste episódio imperdível de estreia do Podcast Manifesto, Nathalia Brasil comanda o papo no "Desvio De Rota!". Uma conversa instigante sobre caminhos da juventude, escolhas e visões de mundo. Estreia oficial dia 15 de Agosto às 19:00!',
+    duration: 'Estreia 15/08 às 19h',
+    date: '15/08 às 19:00',
     episodeNumber: 1,
-    tags: ['Educação', 'Tecnologia', 'Futuro']
+    tags: ['Desvio De Rota', 'Nathalia Brasil', 'Estreia', 'Podcast Manifesto'],
+    isPremiere: true,
+    premiereDate: '15/08',
+    premiereTime: '19:00',
+    videoUrl: CHANNEL_URL
   },
   {
     id: 'ep-2',
-    youtubeId: '3JZ_D3ELwOQ', // Example video ID
+    youtubeId: '3JZ_D3ELwOQ',
     title: 'Cultura Periférica e Democracia do Saber',
     description: 'Uma conversa enriquecedora sobre como a arte, a literatura e a expressão cultural das periferias transformam realidades e fortalecem o pensamento crítico.',
     duration: '38 min',
@@ -36,7 +49,7 @@ const PODCAST_EPISODES: Episode[] = [
   },
   {
     id: 'ep-3',
-    youtubeId: 'fJ9rUzIMcZQ', // Example video ID
+    youtubeId: 'fJ9rUzIMcZQ',
     title: 'Primeiro Emprego e Desafios da Juventude',
     description: 'Dicas práticas, orientações de carreira e depoimentos sobre como enfrentar o mercado de trabalho com autonomia e pensamento estratégico.',
     duration: '45 min',
@@ -46,7 +59,7 @@ const PODCAST_EPISODES: Episode[] = [
   },
   {
     id: 'ep-4',
-    youtubeId: 'tgbNymZ7vqY', // Example video ID
+    youtubeId: 'tgbNymZ7vqY',
     title: 'Comunicação Digital e Fake News no Século XXI',
     description: 'Como analisar criticamente as notícias na era da informação rápida e construir uma postura consciente nas redes sociais.',
     duration: '35 min',
@@ -63,10 +76,8 @@ export function PodcastSection() {
 
   const handleSelectEpisode = (ep: Episode) => {
     setSelectedEpisode(ep);
-    setIsPlaying(true); // Enable autoplay when user explicitly selects an episode
+    setIsPlaying(false);
   };
-
-  const channelUrl = 'https://www.youtube.com/@jornalmanifesto'; // Company YouTube Channel
 
   return (
     <section className="mb-12 bg-card rounded-2xl p-6 md:p-8 border border-border shadow-md transition-all duration-300">
@@ -74,65 +85,158 @@ export function PodcastSection() {
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+          <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center border border-red-500/20 shadow-sm">
             <Mic className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-xl md:text-2xl font-display font-bold text-foreground tracking-tight">
                 {t('podcast.title_start')}<span className="text-primary">{t('podcast.title_end')}</span>
               </h2>
-              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider bg-red-500/10 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-md border border-red-500/20">
-                <Radio className="w-3 h-3 animate-pulse text-red-500" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider bg-red-500/10 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-md border border-red-500/20">
+                <Radio className="w-3.5 h-3.5 animate-pulse text-red-500" />
                 {t('podcast.youtube_badge')}
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-sans mt-0.5">
-              {t('podcast.subtitle')}
+              Assista no nosso canal oficial do YouTube <strong className="text-foreground">@JornalManifesto</strong>
             </p>
           </div>
         </div>
 
+        {/* Channel Direct Link Button */}
         <a
-          href={channelUrl}
+          href={CHANNEL_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs transition-all cursor-pointer shadow-sm self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs transition-all cursor-pointer shadow-md hover:shadow-lg self-start sm:self-auto group"
         >
-          <Youtube className="w-4 h-4" />
-          <span>{t('podcast.youtube_button')}</span>
+          <Youtube className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          <span>Visitar Canal @JornalManifesto</span>
           <ExternalLink className="w-3.5 h-3.5 opacity-80" />
         </a>
       </div>
 
-      {/* Main Grid: Player (Iframe) + Episode List */}
+      {/* Main Grid: Visualizer Player + Episode List */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Col (Iframe & Current Episode Info): 7 cols */}
+        {/* Left Col: Main Visualizer Player */}
         <div className="lg:col-span-7 flex flex-col space-y-4">
           
-          {/* Manipulated YouTube Iframe */}
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-border shadow-lg group">
-            <iframe
-              key={selectedEpisode.id}
-              src={`https://www.youtube-nocookie.com/embed/${selectedEpisode.youtubeId}?autoplay=${isPlaying ? 1 : 0}&rel=0&modestbranding=1`}
-              title={selectedEpisode.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              className="w-full h-full border-0"
-            />
+          {/* Main Visualizer Container */}
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black border border-border shadow-xl group">
+            
+            {isPlaying && selectedEpisode.youtubeId ? (
+              <iframe
+                key={selectedEpisode.id}
+                src={`https://www.youtube-nocookie.com/embed/${selectedEpisode.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+                title={selectedEpisode.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            ) : (
+              /* Custom Visualizer Banner with Thumbnail Cover */
+              <div className="relative w-full h-full bg-gradient-to-t from-black/90 via-black/40 to-black/30 flex flex-col justify-between p-4 sm:p-6">
+                
+                {/* Background Thumbnail Image */}
+                <img
+                  src={selectedEpisode.thumbnailUrl || `https://img.youtube.com/vi/${selectedEpisode.youtubeId}/hqdefault.jpg`}
+                  alt={selectedEpisode.title}
+                  className="absolute inset-0 w-full h-full object-cover z-0 filter brightness-95 group-hover:scale-105 transition-transform duration-500"
+                />
+
+                {/* Gradient Overlays for contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 z-10 pointer-events-none" />
+
+                {/* Top Badge: Premiere or Live notification */}
+                <div className="relative z-20 flex items-center justify-between gap-2">
+                  {selectedEpisode.isPremiere ? (
+                    <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold text-xs px-3 py-1.5 rounded-full shadow-lg border border-white/20 animate-pulse">
+                      <Calendar className="w-3.5 h-3.5" />
+                      ESTREIA: 15/08 às 19:00
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white font-semibold text-xs px-3 py-1 rounded-full border border-white/10">
+                      <Radio className="w-3.5 h-3.5 text-red-500" />
+                      Podcast Manifesto
+                    </span>
+                  )}
+
+                  <a
+                    href={CHANNEL_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-white/90 bg-black/50 hover:bg-red-600/90 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 transition-all font-medium"
+                  >
+                    <Youtube className="w-3.5 h-3.5 text-red-500 group-hover:text-white" />
+                    <span className="hidden sm:inline">@JornalManifesto</span>
+                  </a>
+                </div>
+
+                {/* Center Action: Play / Watch Button */}
+                <div className="relative z-20 flex flex-col items-center justify-center my-auto text-center space-y-3">
+                  {selectedEpisode.isPremiere ? (
+                    <a
+                      href={selectedEpisode.videoUrl || CHANNEL_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group/btn flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full font-bold text-sm shadow-2xl transition-all duration-300 hover:scale-105 border border-red-400/40 cursor-pointer"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover/btn:scale-110 transition-transform">
+                        <Play className="w-4 h-4 fill-white ml-0.5" />
+                      </div>
+                      <span>Assistir Estreia no YouTube</span>
+                      <ExternalLink className="w-4 h-4 opacity-80" />
+                    </a>
+                  ) : selectedEpisode.youtubeId ? (
+                    <button
+                      onClick={() => setIsPlaying(true)}
+                      className="group/btn flex items-center gap-3 bg-white/90 hover:bg-white text-black px-6 py-3 rounded-full font-bold text-sm shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white">
+                        <Play className="w-4 h-4 fill-white ml-0.5" />
+                      </div>
+                      <span>Reproduzir Vídeo</span>
+                    </button>
+                  ) : (
+                    <a
+                      href={CHANNEL_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-full font-bold text-xs transition-all shadow-lg"
+                    >
+                      <Youtube className="w-4 h-4" />
+                      <span>Acessar Canal do YouTube</span>
+                    </a>
+                  )}
+                </div>
+
+                {/* Bottom Details Overlay inside Visualizer */}
+                <div className="relative z-20 space-y-1">
+                  <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    {selectedEpisode.isPremiere ? 'Grande Estreia do Episódio 01' : `Episódio #${selectedEpisode.episodeNumber}`}
+                  </span>
+                  <h3 className="font-display font-bold text-lg sm:text-xl text-white line-clamp-1 drop-shadow-md">
+                    {selectedEpisode.title}
+                  </h3>
+                </div>
+
+              </div>
+            )}
           </div>
 
-          {/* Current Video Metadata */}
-          <div className="bg-secondary/40 p-5 rounded-xl border border-border/50 space-y-2">
+          {/* Current Video Info Card */}
+          <div className="bg-secondary/40 p-5 rounded-xl border border-border/50 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span className="font-bold text-primary flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-accent" />
-                {t('podcast.episode')} #{selectedEpisode.episodeNumber}
+                Episódio #{selectedEpisode.episodeNumber}
               </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
-                {selectedEpisode.duration} • {selectedEpisode.date}
+              <span className="flex items-center gap-1.5 font-semibold text-foreground">
+                <Clock className="w-3.5 h-3.5 text-red-500" />
+                {selectedEpisode.date}
               </span>
             </div>
 
@@ -144,21 +248,34 @@ export function PodcastSection() {
               {selectedEpisode.description}
             </p>
 
-            <div className="flex flex-wrap gap-1.5 pt-2">
-              {selectedEpisode.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] font-semibold bg-primary/10 text-primary px-2.5 py-0.5 rounded-full"
-                >
-                  #{tag}
-                </span>
-              ))}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div className="flex flex-wrap gap-1.5">
+                {selectedEpisode.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[10px] font-semibold bg-primary/10 text-primary px-2.5 py-0.5 rounded-full border border-primary/20"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <a
+                href={CHANNEL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600 hover:text-red-700 dark:text-red-400 hover:underline"
+              >
+                <Bell className="w-3.5 h-3.5" />
+                <span>Ativar lembrete no YouTube</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
             </div>
           </div>
 
         </div>
 
-        {/* Right Col (Playlist / Episodes Picker): 5 cols */}
+        {/* Right Col: Episodes List / Playlist */}
         <div className="lg:col-span-5 flex flex-col space-y-3">
           <h3 className="text-sm font-bold text-foreground font-display uppercase tracking-wider flex items-center justify-between">
             <span>{t('podcast.all_episodes')}</span>
@@ -167,7 +284,7 @@ export function PodcastSection() {
             </span>
           </h3>
 
-          <div className="flex-1 overflow-y-auto max-h-[460px] space-y-2.5 pr-1 scrollbar-thin scrollbar-thumb-border">
+          <div className="flex-1 overflow-y-auto max-h-[480px] space-y-3 pr-1 scrollbar-thin scrollbar-thumb-border">
             {PODCAST_EPISODES.map((ep) => {
               const isSelected = selectedEpisode.id === ep.id;
 
@@ -181,13 +298,18 @@ export function PodcastSection() {
                       : 'bg-card hover:bg-secondary/60 border-border hover:border-primary/40'
                   }`}
                 >
-                  {/* Thumbnail / Play Icon */}
-                  <div className="relative flex-shrink-0 w-24 aspect-video rounded-lg overflow-hidden bg-muted border border-border group-hover:scale-102 transition-transform">
+                  {/* Thumbnail Preview */}
+                  <div className="relative flex-shrink-0 w-28 aspect-video rounded-lg overflow-hidden bg-muted border border-border group-hover:scale-102 transition-transform">
                     <img
-                      src={`https://img.youtube.com/vi/${ep.youtubeId}/hqdefault.jpg`}
+                      src={ep.thumbnailUrl || `https://img.youtube.com/vi/${ep.youtubeId}/hqdefault.jpg`}
                       alt={ep.title}
                       className="w-full h-full object-cover"
                     />
+                    {ep.isPremiere && (
+                      <div className="absolute top-1 left-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow">
+                        ESTREIA
+                      </div>
+                    )}
                     <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${
                       isSelected ? 'bg-primary/40 opacity-100' : 'bg-black/40 group-hover:opacity-100 opacity-70'
                     }`}>
@@ -205,7 +327,7 @@ export function PodcastSection() {
                       <span className={isSelected ? 'text-primary font-bold' : ''}>
                         EP #{ep.episodeNumber}
                       </span>
-                      <span>{ep.duration}</span>
+                      <span className={ep.isPremiere ? 'text-red-500 font-bold' : ''}>{ep.duration}</span>
                     </div>
 
                     <h4 className={`text-xs font-bold font-sans line-clamp-2 leading-snug transition-colors ${
@@ -229,3 +351,4 @@ export function PodcastSection() {
     </section>
   );
 }
+

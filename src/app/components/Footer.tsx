@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Mail } from 'lucide-react';
+import { Instagram, Mail, Youtube } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export function Footer() {
@@ -27,13 +27,22 @@ export function Footer() {
           <p className="text-sm font-bold text-foreground tracking-wider uppercase">{t('footer.contact')}</p>
           <div className="flex flex-col sm:flex-row items-center gap-6 text-sm text-muted-foreground">
             <a
+              href="https://www.youtube.com/@JornalManifesto"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:text-red-600 dark:hover:text-red-400 hover:underline transition-colors duration-200"
+            >
+              <Youtube className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <span className="font-medium">@JornalManifesto</span>
+            </a>
+            <a
               href="https://instagram.com/manifesto_espro"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 hover:text-primary hover:underline transition-colors duration-200"
             >
               <Instagram className="w-5 h-5 text-accent" />
-              <span className="font-medium">@jornalmanifesto</span>
+              <span className="font-medium">@manifesto_espro</span>
             </a>
             <a
               href="mailto:jornalmanifesto@outlook.com"
