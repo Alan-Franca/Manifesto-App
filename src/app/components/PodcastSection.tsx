@@ -24,7 +24,7 @@ const CHANNEL_URL = 'https://www.youtube.com/@JornalManifesto';
 const PODCAST_EPISODES: Episode[] = [
   {
     id: 'ep-1',
-    youtubeId: '', // Direct link to channel premiere
+    youtubeId: '',
     thumbnailUrl: ep1Thumbnail,
     title: 'Desvio De Rota! — Episódio 01, Nathalia Brasil',
     description: 'Neste episódio imperdível de estreia do Podcast Manifesto, Nathalia Brasil comanda o papo no "Desvio De Rota!". Uma conversa instigante sobre caminhos da juventude, escolhas e visões de mundo. Estreia oficial dia 15 de Agosto às 19:00!',
@@ -36,36 +36,6 @@ const PODCAST_EPISODES: Episode[] = [
     premiereDate: '15/08',
     premiereTime: '19:00',
     videoUrl: CHANNEL_URL
-  },
-  {
-    id: 'ep-2',
-    youtubeId: '3JZ_D3ELwOQ',
-    title: 'Cultura Periférica e Democracia do Saber',
-    description: 'Uma conversa enriquecedora sobre como a arte, a literatura e a expressão cultural das periferias transformam realidades e fortalecem o pensamento crítico.',
-    duration: '38 min',
-    date: '21 de Julho',
-    episodeNumber: 2,
-    tags: ['Cultura', 'Sociedade', 'Democracia']
-  },
-  {
-    id: 'ep-3',
-    youtubeId: 'fJ9rUzIMcZQ',
-    title: 'Primeiro Emprego e Desafios da Juventude',
-    description: 'Dicas práticas, orientações de carreira e depoimentos sobre como enfrentar o mercado de trabalho com autonomia e pensamento estratégico.',
-    duration: '45 min',
-    date: '14 de Julho',
-    episodeNumber: 3,
-    tags: ['Carreira', 'Trabalho', 'Juventude']
-  },
-  {
-    id: 'ep-4',
-    youtubeId: 'tgbNymZ7vqY',
-    title: 'Comunicação Digital e Fake News no Século XXI',
-    description: 'Como analisar criticamente as notícias na era da informação rápida e construir uma postura consciente nas redes sociais.',
-    duration: '35 min',
-    date: '07 de Julho',
-    episodeNumber: 4,
-    tags: ['Mídia', 'Informação', 'Crítica']
   }
 ];
 
@@ -117,10 +87,10 @@ export function PodcastSection() {
         </a>
       </div>
 
-      {/* Main Grid: Visualizer Player + Episode List */}
+      {/* Main Grid: Visualizer Player + Episode Details */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Col: Main Visualizer Player */}
+        {/* Left Col: Main Visualizer Player (7 cols) */}
         <div className="lg:col-span-7 flex flex-col space-y-4">
           
           {/* Main Visualizer Container */}
@@ -137,7 +107,7 @@ export function PodcastSection() {
               />
             ) : (
               /* Custom Visualizer Banner with Thumbnail Cover */
-              <div className="relative w-full h-full bg-gradient-to-t from-black/90 via-black/40 to-black/30 flex flex-col justify-between p-4 sm:p-6">
+              <div className="relative w-full h-full bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-4 sm:p-6">
                 
                 {/* Background Thumbnail Image */}
                 <img
@@ -147,22 +117,10 @@ export function PodcastSection() {
                 />
 
                 {/* Gradient Overlays for contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 z-10 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40 z-10 pointer-events-none" />
 
-                {/* Top Badge: Premiere or Live notification */}
-                <div className="relative z-20 flex items-center justify-between gap-2">
-                  {selectedEpisode.isPremiere ? (
-                    <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-amber-600 text-white font-extrabold text-xs px-3 py-1.5 rounded-full shadow-lg border border-white/20 animate-pulse">
-                      <Calendar className="w-3.5 h-3.5" />
-                      ESTREIA: 15/08 às 19:00
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white font-semibold text-xs px-3 py-1 rounded-full border border-white/10">
-                      <Radio className="w-3.5 h-3.5 text-red-500" />
-                      Podcast Manifesto
-                    </span>
-                  )}
-
+                {/* Top Badge: Channel link */}
+                <div className="relative z-20 flex items-center justify-end gap-2">
                   <a
                     href={CHANNEL_URL}
                     target="_blank"
@@ -172,44 +130,6 @@ export function PodcastSection() {
                     <Youtube className="w-3.5 h-3.5 text-red-500 group-hover:text-white" />
                     <span className="hidden sm:inline">@JornalManifesto</span>
                   </a>
-                </div>
-
-                {/* Center Action: Play / Watch Button */}
-                <div className="relative z-20 flex flex-col items-center justify-center my-auto text-center space-y-3">
-                  {selectedEpisode.isPremiere ? (
-                    <a
-                      href={selectedEpisode.videoUrl || CHANNEL_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group/btn flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full font-bold text-sm shadow-2xl transition-all duration-300 hover:scale-105 border border-red-400/40 cursor-pointer"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover/btn:scale-110 transition-transform">
-                        <Play className="w-4 h-4 fill-white ml-0.5" />
-                      </div>
-                      <span>Assistir Estreia no YouTube</span>
-                      <ExternalLink className="w-4 h-4 opacity-80" />
-                    </a>
-                  ) : selectedEpisode.youtubeId ? (
-                    <button
-                      onClick={() => setIsPlaying(true)}
-                      className="group/btn flex items-center gap-3 bg-white/90 hover:bg-white text-black px-6 py-3 rounded-full font-bold text-sm shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white">
-                        <Play className="w-4 h-4 fill-white ml-0.5" />
-                      </div>
-                      <span>Reproduzir Vídeo</span>
-                    </button>
-                  ) : (
-                    <a
-                      href={CHANNEL_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-full font-bold text-xs transition-all shadow-lg"
-                    >
-                      <Youtube className="w-4 h-4" />
-                      <span>Acessar Canal do YouTube</span>
-                    </a>
-                  )}
                 </div>
 
                 {/* Bottom Details Overlay inside Visualizer */}
@@ -275,16 +195,16 @@ export function PodcastSection() {
 
         </div>
 
-        {/* Right Col: Episodes List / Playlist */}
+        {/* Right Col: Single Episode Highlight / Playlist (5 cols) */}
         <div className="lg:col-span-5 flex flex-col space-y-3">
           <h3 className="text-sm font-bold text-foreground font-display uppercase tracking-wider flex items-center justify-between">
             <span>{t('podcast.all_episodes')}</span>
             <span className="text-xs text-muted-foreground font-sans font-normal">
-              {PODCAST_EPISODES.length} {t('podcast.available')}
+              1 de 1 episódio
             </span>
           </h3>
 
-          <div className="flex-1 overflow-y-auto max-h-[480px] space-y-3 pr-1 scrollbar-thin scrollbar-thumb-border">
+          <div className="space-y-3">
             {PODCAST_EPISODES.map((ep) => {
               const isSelected = selectedEpisode.id === ep.id;
 
@@ -310,15 +230,6 @@ export function PodcastSection() {
                         ESTREIA
                       </div>
                     )}
-                    <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${
-                      isSelected ? 'bg-primary/40 opacity-100' : 'bg-black/40 group-hover:opacity-100 opacity-70'
-                    }`}>
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                        isSelected ? 'bg-primary text-primary-foreground' : 'bg-white/90 text-black'
-                      }`}>
-                        <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                      </div>
-                    </div>
                   </div>
 
                   {/* Episode details */}
@@ -343,6 +254,16 @@ export function PodcastSection() {
                 </div>
               );
             })}
+
+            {/* Teaser Box for Future Episodes */}
+            <div className="p-4 rounded-xl border border-dashed border-border bg-muted/20 text-center space-y-1 mt-4">
+              <span className="text-xs font-bold text-muted-foreground">
+                🎙️ Novos episódios semanalmente
+              </span>
+              <p className="text-[11px] text-muted-foreground/80">
+                Inscreva-se no canal <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="text-red-500 font-bold hover:underline">@JornalManifesto</a> para não perder os próximos lançamentos!
+              </p>
+            </div>
           </div>
         </div>
 
