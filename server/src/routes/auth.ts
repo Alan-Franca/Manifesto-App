@@ -185,8 +185,10 @@ router.post('/login', async (req: any, res: any) => {
       });
     }
 
-    // Check if 2FA (Two Factor Auth) is enabled
-    if (user.twoFactorEnabled) {
+    const isAdminLogin = user.role === 'admin';
+
+    // Check if 2FA (Two Factor Auth) is enabled, except for admin accounts
+    if (user.twoFactorEnabled && !isAdminLogin) {
       const otpCode = generateOTP();
       const expires = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
 
@@ -203,6 +205,12 @@ router.post('/login', async (req: any, res: any) => {
         message: 'Código de autenticação de dois fatores enviado',
         emailDelivery
       });
+    }
+
+    if (isAdminLogin) {
+      user.loginOtpCode = null;
+      user.loginOtpExpires = null;
+      await user.save();
     }
 
     // Direct Login (No 2FA)
