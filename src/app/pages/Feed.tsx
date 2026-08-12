@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 import { NewsCard } from '../components/NewsCard';
@@ -31,6 +32,7 @@ const categoryList = [
 ];
 
 export function Feed() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { t, translateCategory, translateWeeklySegment } = useLanguage();
   const [newsList, setNewsList] = useState<any[]>([]);
@@ -278,7 +280,7 @@ export function Feed() {
                 {featuredNews && (
                   <div className="border-b border-border/60 pb-10">
                     <div 
-                      onClick={() => {}}
+                      onClick={() => navigate(`/news/${featuredNews._id || featuredNews.id}`)}
                       className="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-card rounded-2xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300 border-t-4 border-t-accent cursor-pointer group"
                     >
                       {featuredNews.image && (
@@ -324,7 +326,7 @@ export function Feed() {
                 {gridNews.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {gridNews.map((news) => (
-                      <NewsCard key={news._id || news.id} {...news} />
+                      <NewsCard key={news._id || news.id} id={news._id || news.id} {...news} />
                     ))}
                   </div>
                 )}

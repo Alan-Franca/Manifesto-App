@@ -1,21 +1,39 @@
+import { useNavigate } from 'react-router-dom';
 import { ScrapbookSticker } from './ScrapbookSticker';
 import { AnimatedIcon } from './AnimatedIcon';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface NewsCardProps {
+  id?: string;
+  _id?: string;
   title: string;
   summary: string;
   category: string;
   image?: string;
   readTime: string;
   date: string;
+  onClick?: () => void;
 }
 
-export function NewsCard({ title, summary, category, image, readTime, date }: NewsCardProps) {
+export function NewsCard({ id, _id, title, summary, category, image, readTime, date, onClick }: NewsCardProps) {
   const { translateCategory } = useLanguage();
+  const navigate = useNavigate();
+
+  const articleId = id || _id;
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (articleId) {
+      navigate(`/news/${articleId}`);
+    }
+  };
 
   return (
-    <article className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full border-t-4 border-t-primary">
+    <article
+      onClick={handleClick}
+      className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/40 transition-all duration-300 cursor-pointer flex flex-col h-full border-t-4 border-t-primary"
+    >
       {image && (
         <div className="w-full h-48 bg-muted overflow-hidden relative group">
           <img 

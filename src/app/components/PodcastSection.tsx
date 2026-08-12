@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Youtube, Mic, Clock, ExternalLink, Radio, Sparkles, Calendar, Bell } from 'lucide-react';
+import { Youtube, Mic, Clock, ExternalLink, Radio, Sparkles, Bell } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import ep1Thumbnail from '../../imports/podcast-ep1-thumbnail.png';
 

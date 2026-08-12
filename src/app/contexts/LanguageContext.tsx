@@ -126,7 +126,16 @@ const translations: Record<Language, Record<string, string>> = {
     // About Page
     'about.title': 'Sobre o Jornal Manifesto',
     'about.subtitle': 'Um projeto de jornalismo jovem, crítico e acessível.',
-    'about.back_feed': 'Voltar ao Feed'
+    'about.back_feed': 'Voltar ao Feed',
+
+    // News Detail Page
+    'news_detail.back': 'Voltar ao Feed',
+    'news_detail.share': 'Compartilhar',
+    'news_detail.copied': 'Link copiado para a área de transferência!',
+    'news_detail.font_size': 'Tamanho do texto',
+    'news_detail.related': 'Outras matérias recomendadas',
+    'news_detail.not_found': 'Notícia não encontrada.',
+    'news_detail.like': 'Curtir matéria'
   },
   'en-US': {
     // Header & Navigation
@@ -243,7 +252,16 @@ const translations: Record<Language, Record<string, string>> = {
     // About Page
     'about.title': 'About Jornal Manifesto',
     'about.subtitle': 'A project of youth, critical, and accessible journalism.',
-    'about.back_feed': 'Back to Feed'
+    'about.back_feed': 'Back to Feed',
+
+    // News Detail Page
+    'news_detail.back': 'Back to Feed',
+    'news_detail.share': 'Share',
+    'news_detail.copied': 'Link copied to clipboard!',
+    'news_detail.font_size': 'Font size',
+    'news_detail.related': 'Other recommended articles',
+    'news_detail.not_found': 'Article not found.',
+    'news_detail.like': 'Like article'
   },
   'es-ES': {
     // Header & Navigation
@@ -360,7 +378,16 @@ const translations: Record<Language, Record<string, string>> = {
     // About Page
     'about.title': 'Sobre Jornal Manifesto',
     'about.subtitle': 'Un proyecto de periodismo joven, crítico y accesible.',
-    'about.back_feed': 'Volver al Feed'
+    'about.back_feed': 'Volver al Feed',
+
+    // News Detail Page
+    'news_detail.back': 'Volver al Feed',
+    'news_detail.share': 'Compartir',
+    'news_detail.copied': '¡Enlace copiado al portapapeles!',
+    'news_detail.font_size': 'Tamaño del texto',
+    'news_detail.related': 'Otras noticias recomendadas',
+    'news_detail.not_found': 'Noticia no encontrada.',
+    'news_detail.like': 'Me gusta'
   }
 };
 

@@ -41,6 +41,7 @@ export function Admin() {
   // News Form Fields
   const [newsTitle, setNewsTitle] = useState('');
   const [newsSummary, setNewsSummary] = useState('');
+  const [newsContent, setNewsContent] = useState('');
   const [newsCategory, setNewsCategory] = useState('');
   const [newsReadTime, setNewsReadTime] = useState('5 min');
   const [newsDate, setNewsDate] = useState('');
@@ -113,6 +114,7 @@ export function Admin() {
     setEditingNews(null);
     setNewsTitle('');
     setNewsSummary('');
+    setNewsContent('');
     setNewsCategory('');
     setNewsReadTime('5 min');
     // Set current date formatted as DD MMM YYYY in Portuguese (e.g. 29 Jun 2026)
@@ -128,6 +130,7 @@ export function Admin() {
     setEditingNews(item);
     setNewsTitle(item.title);
     setNewsSummary(item.summary);
+    setNewsContent(item.content || '');
     setNewsCategory(item.category);
     setNewsReadTime(item.readTime || '5 min');
     setNewsDate(item.date);
@@ -146,6 +149,7 @@ export function Admin() {
     const payload = {
       title: newsTitle,
       summary: newsSummary,
+      content: newsContent,
       category: newsCategory,
       readTime: newsReadTime,
       date: newsDate,
@@ -458,14 +462,25 @@ export function Admin() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="news-summary">Resumo / Conteúdo da Notícia *</Label>
+              <Label htmlFor="news-summary">Resumo da Notícia *</Label>
               <Textarea
                 id="news-summary"
                 value={newsSummary}
                 onChange={(e) => setNewsSummary(e.target.value)}
                 placeholder="Descreva de forma atrativa o resumo do acontecimento..."
-                rows={4}
+                rows={3}
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="news-content">Conteúdo Completo da Matéria (Opcional)</Label>
+              <Textarea
+                id="news-content"
+                value={newsContent}
+                onChange={(e) => setNewsContent(e.target.value)}
+                placeholder="Texto completo da matéria (separe parágrafos com duas quebras de linha)..."
+                rows={6}
               />
             </div>
 

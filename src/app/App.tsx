@@ -10,6 +10,7 @@ import { Profile } from './pages/Profile';
 import { Admin } from './pages/Admin';
 import { About } from './pages/About';
 import { CupSchedule } from './pages/CupSchedule';
+import { NewsDetail } from './pages/NewsDetail';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -57,6 +58,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Feed />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/news/:id"
+        element={
+          <ProtectedRoute>
+            <NewsDetail />
           </ProtectedRoute>
         }
       />

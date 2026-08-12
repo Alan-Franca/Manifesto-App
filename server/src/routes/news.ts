@@ -29,9 +29,24 @@ router.get('/', async (_req: any, res: any) => {
   }
 });
 
-// 2. CREATE NEWS (Admin only)
+// 2. GET SINGLE NEWS BY ID
+router.get('/:id', async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+    const newsItem = await News.findById(id);
+    if (!newsItem) {
+      return res.status(404).json({ error: 'Notícia não encontrada' });
+    }
+    return res.json(newsItem);
+  } catch (error) {
+    console.error('Erro ao buscar notícia individual:', error);
+    return res.status(500).json({ error: 'Erro interno ao carregar notícia' });
+  }
+});
+
+// 3. CREATE NEWS (Admin only)
 router.post('/', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
-  const { title, summary, category, image, readTime, date } = req.body;
+  const { title, summary, content, category, image, readTime, date } = req.body;
 
   try {
     if (!title || !summary || !category || !date) {
@@ -41,6 +56,7 @@ router.post('/', authMiddleware as any, adminMiddleware as any, async (req: Auth
     const newsItem = new News({
       title,
       summary,
+      content: content || '',
       category,
       image: image || '',
       readTime: readTime || '5 min',
@@ -55,9 +71,9 @@ router.post('/', authMiddleware as any, adminMiddleware as any, async (req: Auth
   }
 });
 
-// 3. UPDATE NEWS (Admin only)
+// 4. UPDATE NEWS (Admin only)
 router.put('/:id', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
-  const { title, summary, category, image, readTime, date } = req.body;
+  const { title, summary, content, category, image, readTime, date } = req.body;
   const { id } = req.params;
 
   try {
@@ -68,6 +84,7 @@ router.put('/:id', authMiddleware as any, adminMiddleware as any, async (req: Au
 
     if (title !== undefined) newsItem.title = title;
     if (summary !== undefined) newsItem.summary = summary;
+    if (content !== undefined) newsItem.content = content;
     if (category !== undefined) newsItem.category = category;
     if (image !== undefined) newsItem.image = image;
     if (readTime !== undefined) newsItem.readTime = readTime;

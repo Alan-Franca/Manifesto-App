@@ -12,6 +12,10 @@ const NewsSchema = new Schema(
       required: true,
       trim: true,
     },
+    content: {
+      type: String,
+      default: '',
+    },
     category: {
       type: String,
       required: true,
