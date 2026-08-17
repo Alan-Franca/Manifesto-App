@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../../imports/newLogo.png';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -14,7 +13,7 @@ export function Register() {
     name: '',
     email: '',
     phone: '',
-    gender: '',
+    gender: 'prefiro-nao-dizer',
     password: '',
     confirmPassword: ''
   });
@@ -253,21 +252,6 @@ export function Register() {
                 onChange={handleChange}
                 required
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Sexo</Label>
-              <Select value={formData.gender} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="masculino">Masculino</SelectItem>
-                  <SelectItem value="feminino">Feminino</SelectItem>
-                  <SelectItem value="outro">Outro</SelectItem>
-                  <SelectItem value="prefiro-nao-dizer">Prefiro não dizer</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="space-y-2">

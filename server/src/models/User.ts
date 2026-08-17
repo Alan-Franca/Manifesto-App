@@ -20,10 +20,12 @@ const UserSchema = new Schema(
       required: false,
       default: '',
       trim: true,
+      index: true,
     },
     gender: {
       type: String,
-      required: true,
+      required: false,
+      default: 'prefiro-nao-dizer',
     },
     password: {
       type: String,

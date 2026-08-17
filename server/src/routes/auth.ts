@@ -16,10 +16,11 @@ function generateOTP(): string {
 // 1. REGISTER
 router.post('/register', async (req: any, res: any) => {
   const { name, email, phone, gender, password } = req.body;
+  const userGender = gender || 'prefiro-nao-dizer';
 
   try {
-    if (!name || !email || !gender || !password) {
-      return res.status(400).json({ error: 'Nome, e-mail, gênero e senha são obrigatórios' });
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Nome, e-mail e senha são obrigatórios' });
     }
 
     // Validation: Disposable Email
@@ -45,7 +46,7 @@ router.post('/register', async (req: any, res: any) => {
 
         existingUser.name = name;
         existingUser.password = password; // pre-save hook will hash it
-        existingUser.gender = gender;
+        existingUser.gender = userGender;
         if (phone) existingUser.phone = phone;
         existingUser.emailVerificationCode = emailCode;
         
@@ -70,7 +71,7 @@ router.post('/register', async (req: any, res: any) => {
       name,
       email: email.toLowerCase(),
       phone: phone || '',
-      gender,
+      gender: userGender,
       password, // hashed by mongoose hook
       emailVerificationCode: emailCode,
       emailVerified: false,

@@ -5,17 +5,26 @@ import { parseNewsDate } from '../utils/dateParser.js';
 
 const router = Router();
 
-// 1. GET ALL NEWS
-router.get('/', async (_req: any, res: any) => {
+// 1. GET ALL NEWS (Optimized Projection & Mongo Sort)
+router.get('/', async (req: any, res: any) => {
   try {
-    const news = await News.find().sort({ createdAt: -1 });
+    const limit = Math.min(parseInt(req.query.limit as string) || 100, 100);
+    const page = Math.max(parseInt(req.query.page as string) || 1, 1);
+    const skip = (page - 1) * limit;
 
-    // Sort by publication date (newest first), falling back to createdAt
+    // Exclude heavy 'content' text from list endpoints to boost response speed
+    const news = await News.find()
+      .select('-content')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    // Fine-grain sort by publication date if date is formatted
     news.sort((a: any, b: any) => {
       const timeA = parseNewsDate(a.date);
       const timeB = parseNewsDate(b.date);
       if (timeB !== timeA) {
-        return timeB - timeA; // Newest date first
+        return timeB - timeA;
       }
       const createdA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const createdB = b.createdAt ? new Date(b.createdAt).getTime() : 0;

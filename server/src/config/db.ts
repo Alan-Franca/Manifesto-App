@@ -117,8 +117,13 @@ export async function connectDB() {
     await mongoose.connect(MONGODB_URI);
     isConnected = true;
     console.log('=== MongoDB conectado com sucesso ===');
-    await News.syncIndexes();
-    await seedDatabase();
+    
+    // Run index sync and seeding asynchronously to prevent blocking server cold starts
+    Promise.all([
+      News.syncIndexes().catch(err => console.error('Erro ao sincronizar índices de News:', err)),
+      User.syncIndexes().catch(err => console.error('Erro ao sincronizar índices de User:', err)),
+      seedDatabase().catch(err => console.error('Erro ao executar seedDatabase:', err))
+    ]);
   } catch (error) {
     console.error('Erro de conexão com o MongoDB:', error);
     throw error;

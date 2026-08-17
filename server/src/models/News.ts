@@ -40,5 +40,6 @@ const NewsSchema = new Schema(
 );
 
 NewsSchema.index({ createdAt: -1 });
+NewsSchema.index({ category: 1, createdAt: -1 });
 
 export const News = model('News', NewsSchema);
