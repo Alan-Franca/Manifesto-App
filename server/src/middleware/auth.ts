@@ -29,7 +29,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
 
 export async function adminMiddleware(req: AuthRequest, res: Response, next: NextFunction): Promise<any> {
   try {
-    const user = await User.findById(req.userId);
+    const user = await User.findById(req.userId).select('role').lean();
     if (!user || (user as any).role !== 'admin') {
       return res.status(403).json({ error: 'Acesso negado. Apenas administradores.' });
     }

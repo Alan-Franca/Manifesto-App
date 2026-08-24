@@ -46,13 +46,11 @@ export function NewsDetail() {
           setError(t('news_detail.not_found'));
         }
 
-        // Fetch all news to pick related items
-        const allRes = await fetch('/api/news', { headers });
+        // Fetch only related news selected by the backend
+        const allRes = await fetch(`/api/news/${id}/related?limit=3`, { headers });
         if (allRes.ok) {
           const allData = await allRes.json();
-          // Filter out current article
-          const filtered = allData.filter((item: any) => (item._id || item.id) !== id);
-          setRelatedNews(filtered.slice(0, 3));
+          setRelatedNews(allData.items);
         }
       } catch (err) {
         console.error('Erro ao buscar matéria:', err);

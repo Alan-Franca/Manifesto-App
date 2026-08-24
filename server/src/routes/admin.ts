@@ -5,10 +5,27 @@ import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth
 const router = Router();
 
 // 1. GET ALL USERS (Admin only)
-router.get('/users', authMiddleware as any, adminMiddleware as any, async (_req: AuthRequest, res: Response): Promise<any> => {
+router.get('/users', authMiddleware as any, adminMiddleware as any, async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
-    return res.json(users);
+    const limit = Math.min(Math.max(Number.parseInt(String(req.query.limit || '25'), 10) || 25, 1), 100);
+    const page = Math.max(Number.parseInt(String(req.query.page || '1'), 10) || 1, 1);
+    const search = String(req.query.q || '').trim();
+    const filter = search
+      ? { $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+        ] }
+      : {};
+    const [users, total] = await Promise.all([
+      User.find(filter)
+        .select('name email phone profileImage role emailVerified createdAt')
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      User.countDocuments(filter),
+    ]);
+    return res.json({ items: users, pageInfo: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     return res.status(500).json({ error: 'Erro interno ao carregar usuários' });

@@ -4,6 +4,7 @@ import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 import { NewsCard } from '../components/NewsCard';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { useAuth } from '../contexts/AuthContext';
 import { Footer } from '../components/Footer';
 import { InstagramBanner } from '../components/InstagramBanner';
@@ -42,27 +43,52 @@ export function Feed() {
   // Filtering states
   const [activeCategory, setActiveCategory] = useState<string>('para-voce');
   const [activeSegment, setActiveSegment] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   // Get current day of week (1-5 for Mon-Fri, 0/6 fallback to Monday)
   const todayDay = new Date().getDay();
   const currentWeekday = todayDay === 0 || todayDay === 6 ? 1 : todayDay;
 
   useEffect(() => {
+    const timeout = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+    return () => window.clearTimeout(timeout);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const controller = new AbortController();
     async function fetchNews() {
+      setLoading(true);
+      setError('');
       try {
         const token = localStorage.getItem('manifesto_token');
         const headers: any = {};
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
         }
-        const res = await fetch('/api/news', { headers });
+        const segmentMapping: Record<number, string[]> = {
+          1: ['📰 NOTÍCIAS'], 2: ['💡 EXPLICAÇÕES'], 3: ['🧠 TECNOLOGIA'],
+          4: ['🎭 CULTURA'], 5: ['💼 TRABALHO E FUTURO', '🌍 SOCIEDADE']
+        };
+        const categories = activeSegment !== null
+          ? segmentMapping[activeSegment]
+          : activeCategory === 'para-voce'
+          ? (user?.preferences || [])
+          : activeCategory && activeCategory !== 'tudo'
+          ? [activeCategory]
+          : [];
+        const params = new URLSearchParams({ limit: '50' });
+        if (categories.length) params.set('categories', categories.join(','));
+        if (debouncedSearch) params.set('q', debouncedSearch);
+        const res = await fetch(`/api/news?${params.toString()}`, { headers, signal: controller.signal });
         if (res.ok) {
           const data = await res.json();
-          setNewsList(data);
+          setNewsList(data.items);
         } else {
           setError(t('feed.error_loading'));
         }
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error('Erro de rede ao buscar notícias:', err);
         setError(t('feed.error_loading'));
       } finally {
@@ -71,7 +97,8 @@ export function Feed() {
     }
 
     fetchNews();
-  }, []);
+    return () => controller.abort();
+  }, [activeCategory, activeSegment, debouncedSearch, user?.preferences, t]);
 
   // Set default tab to "tudo" if user has no preferences selected
   useEffect(() => {
@@ -81,32 +108,7 @@ export function Feed() {
   }, [user]);
 
   // Filtering logic
-  const filteredNews = newsList.filter(news => {
-    // If filtering by weekly segment
-    if (activeSegment !== null) {
-      const segmentMapping: Record<number, string[]> = {
-        1: ['📰 NOTÍCIAS'],
-        2: ['💡 EXPLICAÇÕES'],
-        3: ['🧠 TECNOLOGIA'],
-        4: ['🎭 CULTURA'],
-        5: ['💼 TRABALHO E FUTURO', '🌍 SOCIEDADE']
-      };
-      const allowedCategories = segmentMapping[activeSegment] || [];
-      return allowedCategories.includes(news.category);
-    }
-
-    // Standard category filtering
-    if (activeCategory === 'tudo') {
-      return true;
-    }
-    if (activeCategory === 'para-voce') {
-      if (!user?.preferences || user.preferences.length === 0) {
-        return true;
-      }
-      return user.preferences.includes(news.category);
-    }
-    return news.category === activeCategory;
-  });
+  const filteredNews = newsList;
 
   const featuredNews = filteredNews[0];
   const gridNews = filteredNews.slice(1);
@@ -205,6 +207,7 @@ export function Feed() {
                 onClick={() => {
                   setActiveCategory('tudo');
                   setActiveSegment(null);
+                  setSearchTerm('');
                 }}
                 className="text-xs text-accent hover:underline font-bold"
               >
@@ -212,6 +215,15 @@ export function Feed() {
               </button>
             )}
           </div>
+
+          <Input
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Buscar por título, resumo ou conteúdo..."
+            aria-label="Buscar notícias"
+            className="mb-4 bg-card"
+          />
           
           <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
             {categoryList.map((cat) => {
@@ -342,4 +354,3 @@ export function Feed() {
     </div>
   );
 }
-

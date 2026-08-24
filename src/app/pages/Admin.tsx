@@ -55,10 +55,10 @@ export function Admin() {
   const fetchNews = async () => {
     setNewsLoading(true);
     try {
-      const res = await fetch('/api/news');
+      const res = await fetch('/api/news?limit=50');
       if (res.ok) {
         const data = await res.json();
-        setNews(data);
+        setNews(data.items);
       } else {
         toast.error('Erro ao carregar notícias do servidor.');
       }
@@ -74,14 +74,14 @@ export function Admin() {
     setUsersLoading(true);
     try {
       const token = localStorage.getItem('manifesto_token');
-      const res = await fetch('/api/admin/users', {
+      const res = await fetch('/api/admin/users?limit=100', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       if (res.ok) {
         const data = await res.json();
-        setUsers(data);
+        setUsers(data.items);
       } else {
         toast.error('Erro ao carregar usuários.');
       }
@@ -173,7 +173,10 @@ export function Admin() {
       if (res.ok) {
         toast.success(editingNews ? 'Notícia atualizada com sucesso!' : 'Notícia adicionada com sucesso!');
         setIsNewsDialogOpen(false);
-        fetchNews();
+        const savedNews = await res.json();
+        setNews(current => editingNews
+          ? current.map(item => item._id === savedNews._id ? savedNews : item)
+          : [savedNews, ...current]);
       } else {
         const errorData = await res.json();
         toast.error(errorData.error || 'Erro ao salvar notícia.');
@@ -198,7 +201,7 @@ export function Admin() {
 
       if (res.ok) {
         toast.success('Notícia excluída com sucesso.');
-        fetchNews();
+        setNews(current => current.filter(item => item._id !== id));
       } else {
         toast.error('Erro ao excluir notícia.');
       }
@@ -222,7 +225,8 @@ export function Admin() {
 
       if (res.ok) {
         toast.success('Usuário atualizado com sucesso.');
-        fetchUsers();
+        const updatedUser = await res.json();
+        setUsers(current => current.map(item => item._id === id ? updatedUser : item));
       } else {
         const data = await res.json();
         toast.error(data.error || 'Erro ao atualizar usuário.');
@@ -247,7 +251,7 @@ export function Admin() {
 
       if (res.ok) {
         toast.success('Usuário excluído com sucesso.');
-        fetchUsers();
+        setUsers(current => current.filter(item => item._id !== id));
       } else {
         const data = await res.json();
         toast.error(data.error || 'Erro ao excluir usuário.');

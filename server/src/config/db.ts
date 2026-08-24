@@ -105,27 +105,31 @@ async function seedDatabase() {
   }
 }
 
-let isConnected = false;
+let connectionPromise: Promise<typeof mongoose> | null = null;
 
 export async function connectDB() {
-  if (isConnected || mongoose.connection.readyState === 1) {
-    return;
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
   }
 
-  try {
+  if (!connectionPromise) {
     mongoose.set('strictQuery', true);
-    await mongoose.connect(MONGODB_URI);
-    isConnected = true;
-    console.log('=== MongoDB conectado com sucesso ===');
-    
-    // Run index sync and seeding asynchronously to prevent blocking server cold starts
-    Promise.all([
-      News.syncIndexes().catch(err => console.error('Erro ao sincronizar índices de News:', err)),
-      User.syncIndexes().catch(err => console.error('Erro ao sincronizar índices de User:', err)),
-      seedDatabase().catch(err => console.error('Erro ao executar seedDatabase:', err))
-    ]);
-  } catch (error) {
-    console.error('Erro de conexão com o MongoDB:', error);
-    throw error;
+    connectionPromise = mongoose.connect(MONGODB_URI, {
+      maxPoolSize: 10,
+      minPoolSize: 0,
+      serverSelectionTimeoutMS: 5000,
+    }).then(async connection => {
+      console.log('=== MongoDB conectado com sucesso ===');
+      if (process.env.RUN_DB_SEED === 'true') {
+        await seedDatabase();
+      }
+      return connection;
+    }).catch(error => {
+      connectionPromise = null;
+      console.error('Erro de conexão com o MongoDB:', error);
+      throw error;
+    });
   }
+
+  return connectionPromise;
 }

@@ -84,6 +84,9 @@ const UserSchema = new Schema(
   }
 );
 
+UserSchema.index({ createdAt: -1, _id: -1 });
+UserSchema.index({ name: 1 });
+
 // Hash password before saving
 UserSchema.pre('save', async function (this: any, next: any) {
   const user = this;
