@@ -12,6 +12,10 @@ function parseLimit(value: unknown, fallback = 20, maximum = 50) {
   return Number.isFinite(parsed) ? Math.min(Math.max(parsed, 1), maximum) : fallback;
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function encodeCursor(item: any) {
   const date = new Date(item.publishedAt || item.createdAt).toISOString();
   return Buffer.from(`${date}|${item._id.toString()}`).toString('base64url');
@@ -40,7 +44,6 @@ router.get('/', async (req: any, res: any) => {
 
     if (categories.length === 1) filter.category = categories[0];
     if (categories.length > 1) filter.category = { $in: categories };
-    if (search) filter.$text = { $search: search };
     if (req.query.cursor && !cursor) return res.status(400).json({ error: 'Cursor de paginação inválido' });
     if (cursor) {
       filter.$or = [
@@ -49,14 +52,26 @@ router.get('/', async (req: any, res: any) => {
       ];
     }
 
-    const query = News.find(filter)
+    const findNews = (queryFilter: FilterQuery<any>) => News.find(queryFilter)
       .select(LIST_PROJECTION)
-      .sort(search ? { score: { $meta: 'textScore' }, publishedAt: -1, _id: -1 } : { publishedAt: -1, _id: -1 })
+      .sort({ publishedAt: -1, _id: -1 })
       .limit(limit + 1)
       .lean();
-    if (search) query.select({ score: { $meta: 'textScore' } });
 
-    const results = await query;
+    let matchedBy: 'title' | 'summary' | null = null;
+    let results;
+    if (search) {
+      const expression = new RegExp(escapeRegExp(search), 'i');
+      results = await findNews({ ...filter, title: expression });
+      matchedBy = 'title';
+
+      if (results.length === 0) {
+        results = await findNews({ ...filter, summary: expression });
+        matchedBy = 'summary';
+      }
+    } else {
+      results = await findNews(filter);
+    }
     const hasMore = results.length > limit;
     const items = hasMore ? results.slice(0, limit) : results;
     res.set('Cache-Control', 'public, max-age=30, stale-while-revalidate=120');
@@ -66,6 +81,7 @@ router.get('/', async (req: any, res: any) => {
         hasMore,
         nextCursor: hasMore && items.length ? encodeCursor(items[items.length - 1]) : null,
       },
+      search: search ? { query: search, matchedBy } : null,
     });
   } catch (error) {
     console.error('Erro ao buscar notícias:', error);
