@@ -1,22 +1,22 @@
 import { useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
-import miau from '../../imports/miau.png';
+import gati from '../../imports/gati.png';
 
 interface CatBurstProps {
   onComplete: () => void;
 }
 
 export function CatBurst({ onComplete }: CatBurstProps) {
-  const cats = useMemo(() => Array.from({ length: 42 }, (_, index) => {
-    const column = index % 7;
-    const row = Math.floor(index / 7);
+  const cats = useMemo(() => Array.from({ length: 72 }, (_, index) => {
+    const column = index % 9;
+    const row = Math.floor(index / 9);
     const jitterX = ((index * 37) % 17) - 8;
     const jitterY = ((index * 53) % 15) - 7;
 
     return {
       id: index,
-      left: Math.min(96, Math.max(4, 7 + column * 14.5 + jitterX)),
-      top: Math.min(94, Math.max(5, 8 + row * 17 + jitterY)),
+      left: Math.min(97, Math.max(3, 5 + column * 11.25 + jitterX)),
+      top: Math.min(96, Math.max(4, 6 + row * 12.5 + jitterY)),
       size: 42 + ((index * 19) % 54),
       rotation: ((index * 71) % 260) - 130,
       delay: (index % 9) * 0.025,
@@ -37,9 +37,9 @@ export function CatBurst({ onComplete }: CatBurstProps) {
       {cats.map(cat => (
         <motion.img
           key={cat.id}
-          src={miau}
+          src={gati}
           alt=""
-          className="absolute rounded-xl object-cover shadow-xl"
+          className="absolute object-contain drop-shadow-xl"
           style={{
             width: cat.size,
             height: cat.size,
