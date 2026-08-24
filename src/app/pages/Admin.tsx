@@ -496,12 +496,12 @@ export function Admin() {
                     <SelectValue placeholder="Selecione uma editoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="🧠 TECNOLOGIA">🧠 TECNOLOGIA</SelectItem>
-                    <SelectItem value="💼 TRABALHO E FUTURO">💼 TRABALHO E FUTURO</SelectItem>
-                    <SelectItem value="🎭 CULTURA">🎭 CULTURA</SelectItem>
-                    <SelectItem value="💡 EXPLICAÇÕES">💡 EXPLICAÇÕES</SelectItem>
-                    <SelectItem value="🌍 SOCIEDADE">🌍 SOCIEDADE</SelectItem>
-                    <SelectItem value="📰 NOTÍCIAS">📰 NOTÍCIAS</SelectItem>
+                    <SelectItem value="🧠 TECNOLOGIA">TECNOLOGIA</SelectItem>
+                    <SelectItem value="💼 TRABALHO E FUTURO">TRABALHO E FUTURO</SelectItem>
+                    <SelectItem value="🎭 CULTURA">CULTURA</SelectItem>
+                    <SelectItem value="💡 EXPLICAÇÕES">EXPLICAÇÕES</SelectItem>
+                    <SelectItem value="🌍 SOCIEDADE">SOCIEDADE</SelectItem>
+                    <SelectItem value="📰 NOTÍCIAS">NOTÍCIAS</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

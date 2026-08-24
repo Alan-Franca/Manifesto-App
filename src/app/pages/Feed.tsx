@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { BottomNav } from '../components/BottomNav';
 import { NewsCard } from '../components/NewsCard';
@@ -14,12 +14,12 @@ import { AnimatedIcon } from '../components/AnimatedIcon';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const weeklySegmentsBase = [
-  { day: 1, emoji: '📰' },
-  { day: 2, emoji: '🤔' },
-  { day: 3, emoji: '✨' },
-  { day: 4, emoji: '📖' },
-  { day: 5, emoji: '🎬' },
-];
+  { day: 1, icon: 'newspaper' },
+  { day: 2, icon: 'help' },
+  { day: 3, icon: 'sparkles' },
+  { day: 4, icon: 'book' },
+  { day: 5, icon: 'theater' },
+] as const;
 
 const categoryList = [
   { id: 'para-voce' },
@@ -34,6 +34,7 @@ const categoryList = [
 
 export function Feed() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const { t, translateCategory, translateWeeklySegment } = useLanguage();
   const [newsList, setNewsList] = useState<any[]>([]);
@@ -49,6 +50,10 @@ export function Feed() {
   // Get current day of week (1-5 for Mon-Fri, 0/6 fallback to Monday)
   const todayDay = new Date().getDay();
   const currentWeekday = todayDay === 0 || todayDay === 6 ? 1 : todayDay;
+
+  useEffect(() => {
+    setSearchTerm(searchParams.get('q') || '');
+  }, [searchParams]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
@@ -182,7 +187,7 @@ export function Feed() {
                       )}
                     </div>
                     <div className="font-display text-base font-bold text-foreground leading-snug flex items-center gap-1.5 mb-1">
-                      <span>{segBase.emoji}</span>
+                      <AnimatedIcon icon={segBase.icon} size={18} />
                       <span>{segInfo.title}</span>
                     </div>
                   </div>

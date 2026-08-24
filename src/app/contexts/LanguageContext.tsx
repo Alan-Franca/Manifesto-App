@@ -393,28 +393,28 @@ const translations: Record<Language, Record<string, string>> = {
 
 const categoryTranslations: Record<Language, Record<string, string>> = {
   'pt-BR': {
-    '🧠 TECNOLOGIA': '🧠 Tecnologia',
-    '💼 TRABALHO E FUTURO': '💼 Trabalho e Futuro',
-    '🎭 CULTURA': '🎭 Cultura',
-    '💡 EXPLICAÇÕES': '💡 Explicações',
-    '🌍 SOCIEDADE': '🌍 Sociedade',
-    '📰 NOTÍCIAS': '📰 Notícias'
+    '🧠 TECNOLOGIA': 'Tecnologia',
+    '💼 TRABALHO E FUTURO': 'Trabalho e Futuro',
+    '🎭 CULTURA': 'Cultura',
+    '💡 EXPLICAÇÕES': 'Explicações',
+    '🌍 SOCIEDADE': 'Sociedade',
+    '📰 NOTÍCIAS': 'Notícias'
   },
   'en-US': {
-    '🧠 TECNOLOGIA': '🧠 Technology',
-    '💼 TRABALHO E FUTURO': '💼 Work & Future',
-    '🎭 CULTURA': '🎭 Culture',
-    '💡 EXPLICAÇÕES': '💡 Explanations',
-    '🌍 SOCIEDADE': '🌍 Society',
-    '📰 NOTÍCIAS': '📰 News'
+    '🧠 TECNOLOGIA': 'Technology',
+    '💼 TRABALHO E FUTURO': 'Work & Future',
+    '🎭 CULTURA': 'Culture',
+    '💡 EXPLICAÇÕES': 'Explanations',
+    '🌍 SOCIEDADE': 'Society',
+    '📰 NOTÍCIAS': 'News'
   },
   'es-ES': {
-    '🧠 TECNOLOGIA': '🧠 Tecnología',
-    '💼 TRABALHO E FUTURO': '💼 Trabajo y Futuro',
-    '🎭 CULTURA': '🎭 Cultura',
-    '💡 EXPLICAÇÕES': '💡 Explicaciones',
-    '🌍 SOCIEDADE': '🌍 Sociedad',
-    '📰 NOTÍCIAS': '📰 Noticias'
+    '🧠 TECNOLOGIA': 'Tecnología',
+    '💼 TRABALHO E FUTURO': 'Trabajo y Futuro',
+    '🎭 CULTURA': 'Cultura',
+    '💡 EXPLICAÇÕES': 'Explicaciones',
+    '🌍 SOCIEDADE': 'Sociedad',
+    '📰 NOTÍCIAS': 'Noticias'
   }
 };
 

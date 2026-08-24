@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,14 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    navigate(`/feed?q=${encodeURIComponent(query)}`);
+    setSearchOpen(false);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 h-20 bg-background/95 backdrop-blur-md border-b border-border z-50 transition-all duration-300">
       <div className="h-full w-full px-4 sm:px-6 md:px-8 flex items-center justify-between">
@@ -22,20 +30,22 @@ export function Header() {
 
         <div className="flex-1 max-w-md mx-8">
           {searchOpen ? (
-            <div className="flex items-center gap-2 bg-input-background rounded-lg px-4 py-2 border border-input">
-              <AnimatedIcon icon="search" size={20} />
+            <form onSubmit={handleSearch} className="flex items-center gap-2 bg-input-background rounded-lg px-4 py-2 border border-input">
+              <button type="submit" aria-label={t('header.search')} className="text-primary">
+                <AnimatedIcon icon="search" size={20} />
+              </button>
               <input
-                type="text"
+                type="search"
                 placeholder={t('header.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 bg-transparent border-none outline-none text-foreground"
                 autoFocus
               />
-              <button onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
+              <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>
                 <AnimatedIcon icon="close" size={20} />
               </button>
-            </div>
+            </form>
           ) : (
             <button
               onClick={() => setSearchOpen(true)}

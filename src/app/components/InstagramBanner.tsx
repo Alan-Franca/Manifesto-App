@@ -25,20 +25,6 @@ export function InstagramBanner() {
         
         {/* Left Side: Content & Headline */}
         <div className="flex-1 space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-[#fd5949]/15 via-[#d6249f]/15 to-[#285AEB]/15 text-foreground border border-[#d6249f]/30 backdrop-blur-md">
-              <Instagram className="w-4 h-4 text-[#d6249f]" />
-              <span className="bg-gradient-to-r from-[#fd5949] via-[#d6249f] to-[#285AEB] bg-clip-text text-transparent font-extrabold">
-                @manifesto_espro
-              </span>
-            </span>
-
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              {t('insta.community')}
-            </span>
-          </div>
-
           <div>
             <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground tracking-tight leading-snug">
               {t('insta.headline_start')}<span className="bg-gradient-to-r from-[#fd5949] via-[#d6249f] to-[#285AEB] bg-clip-text text-transparent">Jornal Manifesto</span>{t('insta.headline_end')}

@@ -6,6 +6,7 @@ import { Footer } from '../components/Footer';
 import { NewsCard } from '../components/NewsCard';
 import { ScrapbookSticker } from '../components/ScrapbookSticker';
 import { AnimatedIcon } from '../components/AnimatedIcon';
+import { CatBurst } from '../components/CatBurst';
 import { Button } from '../components/ui/button';
 import { useLanguage } from '../contexts/LanguageContext';
 import { toast } from 'sonner';
@@ -24,6 +25,7 @@ export function NewsDetail() {
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [showCatBurst, setShowCatBurst] = useState(false);
 
   useEffect(() => {
     async function fetchArticleAndRelated() {
@@ -96,6 +98,7 @@ export function NewsDetail() {
     } else {
       setLiked(true);
       setLikesCount(prev => prev + 1);
+      setShowCatBurst(true);
       toast.success('Obrigado pelo seu feedback!');
     }
   };
@@ -115,6 +118,7 @@ export function NewsDetail() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors duration-300">
+      {showCatBurst && <CatBurst onComplete={() => setShowCatBurst(false)} />}
       <Header />
 
       <main className="flex-1 pt-28 pb-20 md:pb-12 px-4 max-w-4xl mx-auto w-full">

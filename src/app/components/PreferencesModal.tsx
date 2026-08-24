@@ -9,32 +9,32 @@ interface PreferencesModalProps {
 const categories = [
   {
     id: '🧠 TECNOLOGIA',
-    title: '🧠 TECNOLOGIA',
+    title: 'TECNOLOGIA',
     description: 'Inteligência artificial, algoritmos, privacidade, inovação e futuro da internet.',
   },
   {
     id: '💼 TRABALHO E FUTURO',
-    title: '💼 TRABALHO E FUTURO',
+    title: 'TRABALHO E FUTURO',
     description: 'Mercado de trabalho, profissões do futuro, produtividade, burnout e carreira.',
   },
   {
     id: '🎭 CULTURA',
-    title: '🎭 CULTURA',
+    title: 'CULTURA',
     description: 'Música, filmes, séries, moda, eventos e novas tendências culturais.',
   },
   {
     id: '💡 EXPLICAÇÕES',
-    title: '💡 EXPLICAÇÕES',
+    title: 'EXPLICAÇÕES',
     description: 'Quiet quitting, afrofuturismo, burnout digital, fandom e conceitos modernos explicados.',
   },
   {
     id: '🌍 SOCIEDADE',
-    title: '🌍 SOCIEDADE',
+    title: 'SOCIEDADE',
     description: 'Comportamento humano, saúde mental, ansiedade digital e impacto das redes.',
   },
   {
     id: '📰 NOTÍCIAS',
-    title: '📰 NOTÍCIAS',
+    title: 'NOTÍCIAS',
     description: 'Fatos relevantes do mundo, economia simplificada e política de forma leve.',
   }
 ];
@@ -80,7 +80,7 @@ export function PreferencesModal({ onComplete }: PreferencesModalProps) {
               <div className="font-display text-base font-bold tracking-wide flex items-center justify-between text-foreground w-full">
                 <div className="flex items-center gap-3">
                   <ScrapbookSticker category={cat.id} size="sm" hasTape={false} />
-                  <span>{cat.title.replace(/[\uD800-\uDFFF\u2600-\u27BF]/g, '').trim()}</span>
+                  <span>{cat.title}</span>
                 </div>
                 <span className={`w-5 h-5 rounded-full border flex items-center justify-center text-xs font-bold transition-all ${
                   selectedPreferences.includes(cat.id)
